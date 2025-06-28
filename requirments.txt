@@ -3,3 +3,5 @@ SQLAlchemy
 LoginManager
 Bcrypt
 UserMixin
+seaborn
+matplotlib

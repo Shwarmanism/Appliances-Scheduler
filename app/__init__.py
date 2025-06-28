@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from database.config import mysql_path, secret_key
-from app.routes.login_routes import access
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -23,6 +22,14 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'info'
 
+    from app.routes.login_routes import access
+    from app.routes.home_routes import home
+    from app.routes.appliances_routes import appliances
+    from app.routes.analytics_routes import analytics
+
     app.register_blueprint(access)
-    
+    app.register_blueprint(home)
+    app.register_blueprint(appliances)
+    app.register_blueprint(analytics)
+
     return app
