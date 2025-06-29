@@ -60,85 +60,37 @@
                 <div class="filter-chip"><span class="filter-dot yellow"></span> Medium</div>
                 <div class="filter-chip"><span class="filter-dot green"></span> Light</div>
             </div>
-            <div class="appliance-list">
-                <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
-                    <div class="appliance-info">
-                        <div class="appliance-title-row">
-                            <span class="appliance-title">Television</span>
-                            <span class="appliance-status-dot green"></span>
-                        </div>
-                        <div>Energy: 0.00kWh</div>
-                        <div>Time: 00:00:00</div>
-                    </div>
-                    <div class="appliance-cost">Cost: Php 0.00</div>
-                    <button class="delete-appliance-btn" title="Delete">&times;</button>
+            <div class="appliance-list" id="applianceList">
+            {% for appliance in appliances %}
+            <div class="appliance-card" data-id="{{ appliance.appliances_id }}">
+                <input type="checkbox" class="appliance-toggle"
+                    name="appliance-status"
+                    {% if appliance.status == 'on' %} checked {% endif %}
+                    onchange="toggleApplianceStatus('{{ appliance.appliances_id }}', this.checked)">
+                
+                <div class="appliance-info">
+                <div class="appliance-title-row">
+                    <span class="appliance-title">{{ appliance.model or appliance.category }}</span>
+                    <span class="appliance-status-dot 
+                        {% if appliance.severity_level == 'Low' %}green
+                        {% elif appliance.severity_level == 'Moderate' %}yellow
+                        {% else %}red{% endif %}">
+                    </span>
                 </div>
-                <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
-                    <div class="appliance-info">
-                        <div class="appliance-title-row">
-                            <span class="appliance-title">Refrigerator</span>
-                            <span class="appliance-status-dot yellow"></span>
-                        </div>
-                        <div>Energy: 0.00kWh</div>
-                        <div>Time: 00:00:00</div>
-                    </div>
-                    <div class="appliance-cost">Cost: Php 0.00</div>
-                    <button class="delete-appliance-btn" title="Delete">&times;</button>
+                <div>Energy: {{ "%.2f"|format(appliance.daily_energy or 0) }} kWh</div>
+                <div>Time: {{ appliance.hours_used or 0 }} hr/day, {{ appliance.days_used or 0 }} days/week</div>
                 </div>
-                <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
-                    <div class="appliance-info">
-                        <div class="appliance-title-row">
-                            <span class="appliance-title">Microwave</span>
-                            <span class="appliance-status-dot red"></span>
-                        </div>
-                        <div>Energy: 0.00kWh</div>
-                        <div>Time: 00:00:00</div>
-                    </div>
-                    <div class="appliance-cost">Cost: Php 0.00</div>
-                    <button class="delete-appliance-btn" title="Delete">&times;</button>
+
+                <div class="appliance-cost">
+                Cost: Php {{ "%.2f"|format((appliance.daily_energy or 0) * 12) }}
                 </div>
-                <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
-                    <div class="appliance-info">
-                        <div class="appliance-title-row">
-                            <span class="appliance-title">Air Conditioner</span>
-                            <span class="appliance-status-dot red"></span>
-                        </div>
-                        <div>Energy: 0.00kWh</div>
-                        <div>Time: 00:00:00</div>
-                    </div>
-                    <div class="appliance-cost">Cost: Php 0.00</div>
-                    <button class="delete-appliance-btn" title="Delete">&times;</button>
-                </div>
-                <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
-                    <div class="appliance-info">
-                        <div class="appliance-title-row">
-                            <span class="appliance-title">Washing machine</span>
-                            <span class="appliance-status-dot green"></span>
-                        </div>
-                        <div>Energy: 0.00kWh</div>
-                        <div>Time: 00:00:00</div>
-                    </div>
-                    <div class="appliance-cost">Cost: Php 0.00</div>
-                    <button class="delete-appliance-btn" title="Delete">&times;</button>
-                </div>
-                <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
-                    <div class="appliance-info">
-                        <div class="appliance-title-row">
-                            <span class="appliance-title">Electric Kettle</span>
-                            <span class="appliance-status-dot yellow"></span>
-                        </div>
-                        <div>Energy: 0.00kWh</div>
-                        <div>Time: 00:00:00</div>
-                    </div>
-                    <div class="appliance-cost">Cost: Php 0.00</div>
-                    <button class="delete-appliance-btn" title="Delete">&times;</button>
-                </div>
+                    <button class="delete-appliance-btn"
+                            onclick="deleteAppliance('{{ appliance.appliances_id }}')"
+                            title="Delete">
+                        &times;
+                    </button>
+            </div>
+            {% endfor %}
             </div>
             <div class="add-appliance-row">
                 <button class="add-appliance-btn" id="openAddApplianceModal"><span class="plus">+</span> Add New Appliances?</button>
@@ -150,7 +102,7 @@
         <div class="modal-content glass">
             <button class="modal-close-btn" id="closeAddApplianceModal">&times;</button>
             <h2>Add Appliance</h2>
-            <form id="addApplianceForm">
+            <form id="addApplianceForm" method="POST" action="{{ url_for('appliances.add_appliances') }}">
                 <div class="form-group">
                     <label for="appliance-category-filter">Filter by category</label>
                     <select id="appliance-category-filter">
@@ -169,7 +121,7 @@
                     <label for="appliance-model">Model Name</label>
                     <input type="text" id="appliance-model" name="appliance-model" placeholder="Model (optional)">
                 </div>
-                <div class="form-group">
+                <div class="form-group">    
                     <label for="appliance-name">Name</label>
                     <input type="text" id="appliance-name" name="appliance-name" readonly style="background:#f3f3f3;color:#888;">
                 </div>
@@ -226,123 +178,47 @@
     openBtn.onclick = () => { modal.style.display = 'flex'; };
     closeBtn.onclick = () => { modal.style.display = 'none'; };
     window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-  
-    const appliances = [
-        {category: 'Air Conditioner', type: 'Floor Stand, Non-Inverter', capacity: '2.00 HP', wattage: 1700},
-        {category: 'Air Conditioner', type: 'Floor Stand, Non-Inverter', capacity: '3.00 HP', wattage: 2550},
-        {category: 'Air Conditioner', type: 'Split Type, Inverter', capacity: '1.00 HP', wattage: 800},
-        {category: 'Air Conditioner', type: 'Split Type, Inverter', capacity: '1.50 HP', wattage: 1100},
-        {category: 'Air Conditioner', type: 'Split Type, Inverter', capacity: '2.00 HP', wattage: 1450},
-        {category: 'Air Conditioner', type: 'Split Type, Inverter', capacity: '2.50 HP', wattage: 1800},
-        {category: 'Air Conditioner', type: 'Split Type, Non-Inverter', capacity: '1.00 HP', wattage: 950},
-        {category: 'Air Conditioner', type: 'Split Type, Non-Inverter', capacity: '1.50 HP', wattage: 1300},
-        {category: 'Air Conditioner', type: 'Split Type, Non-Inverter', capacity: '2.00 HP', wattage: 1600},
-        {category: 'Air Conditioner', type: 'Split Type, Non-Inverter', capacity: '2.50 HP', wattage: 2000},
-        {category: 'Air Conditioner', type: 'Window Type, Inverter', capacity: '1.00 HP', wattage: 850},
-        {category: 'Air Conditioner', type: 'Window Type, Inverter', capacity: '1.50 HP', wattage: 1150},
-        {category: 'Air Conditioner', type: 'Window Type, Inverter', capacity: '2.00 HP', wattage: 1500},
-        {category: 'Air Conditioner', type: 'Window Type, Non-Inverter', capacity: '0.50 HP', wattage: 500},
-        {category: 'Air Conditioner', type: 'Window Type, Non-Inverter', capacity: '0.75 HP', wattage: 650},
-        {category: 'Air Conditioner', type: 'Window Type, Non-Inverter', capacity: '1.00 HP', wattage: 900},
-        {category: 'Air Conditioner', type: 'Window Type, Non-Inverter', capacity: '1.50 HP', wattage: 1250},
-        {category: 'Air Conditioner', type: 'Window Type, Non-Inverter', capacity: '2.00 HP', wattage: 1600},
-        {category: 'Cooling', type: 'Air Cooler', capacity: '125 W', wattage: 125},
-        {category: 'Cooling', type: 'Air Cooler', capacity: '300 W', wattage: 300},
-        {category: 'Cooling', type: 'Electric Fan', capacity: 'Stand, 16"', wattage: 65},
-        {category: 'Cooling', type: 'Electric Fan', capacity: 'Desk, 12"', wattage: 50},
-        {category: 'Cooling', type: 'Electric Fan', capacity: 'Wall, 16"', wattage: 60},
-        {category: 'Cooling', type: 'Electric Fan', capacity: 'Ceiling, 18"', wattage: 75},
-        {category: 'Cooling', type: 'Industrial Fan', capacity: '500 W', wattage: 500},
-        {category: 'Cooling', type: 'Exhaust Fan', capacity: '12"', wattage: 40},
-        {category: 'Laundry', type: 'Washing Machine', capacity: 'Top Load, 6kg', wattage: 400},
-        {category: 'Laundry', type: 'Washing Machine', capacity: 'Top Load, 10kg', wattage: 600},
-        {category: 'Laundry', type: 'Washing Machine', capacity: 'Front Load, 7kg', wattage: 800},
-        {category: 'Laundry', type: 'Washing Machine', capacity: 'Front Load, 11kg, Inverter', wattage: 1000},
-        {category: 'Laundry', type: 'Spin Dryer', capacity: 'Single Tub', wattage: 200},
-        {category: 'Laundry', type: 'Clothes Dryer', capacity: '5kg', wattage: 1500},
-        {category: 'Laundry', type: 'Flat Iron', capacity: 'Dry', wattage: 1000},
-        {category: 'Laundry', type: 'Flat Iron', capacity: 'Steam', wattage: 1200},
-        {category: 'Kitchen', type: 'Refrigerator', capacity: 'Single Door, 6 cu. ft.', wattage: 120},
-        {category: 'Kitchen', type: 'Refrigerator', capacity: 'Two Door, 12 cu. ft., Inverter', wattage: 150},
-        {category: 'Kitchen', type: 'Chest Freezer', capacity: '7 cu. ft.', wattage: 180},
-        {category: 'Kitchen', type: 'Upright Freezer', capacity: '8 cu. ft.', wattage: 200},
-        {category: 'Kitchen', type: 'Rice Cooker', capacity: '0.6L, 300W', wattage: 300},
-        {category: 'Kitchen', type: 'Rice Cooker', capacity: '1.0L, 500W', wattage: 500},
-        {category: 'Kitchen', type: 'Induction Cooker', capacity: '1200W', wattage: 1200},
-        {category: 'Kitchen', type: 'Electric Stove', capacity: '1500W', wattage: 1500},
-        {category: 'Kitchen', type: 'Oven Toaster', capacity: '650W', wattage: 650},
-        {category: 'Kitchen', type: 'Microwave Oven', capacity: '700W', wattage: 700},
-        {category: 'Kitchen', type: 'Electric Kettle', capacity: '1500W', wattage: 1500},
-        {category: 'Kitchen', type: 'Blender', capacity: '1.00L, 300W', wattage: 300},
-        {category: 'Kitchen', type: 'Coffee Maker', capacity: '600W', wattage: 600},
-        {category: 'Kitchen', type: 'Food Processor', capacity: '600W', wattage: 600},
-        {category: 'Kitchen', type: 'Water Dispenser', capacity: 'Hot & Cold', wattage: 580},
-        {category: 'Kitchen', type: 'Dish Dryer', capacity: '300W', wattage: 300},
-        {category: 'Cleaning', type: 'Vacuum Cleaner', capacity: 'Standard', wattage: 600},
-        {category: 'Cleaning', type: 'Pressure Washer', capacity: '1000W', wattage: 1000},
-        {category: 'Cleaning', type: 'Robot Vacuum', capacity: '30W', wattage: 30},
-        {category: 'Lighting', type: 'LED Bulb', capacity: '5W', wattage: 5},
-        {category: 'Lighting', type: 'LED Bulb', capacity: '9W', wattage: 9},
-        {category: 'Lighting', type: 'LED Bulb', capacity: '12W', wattage: 12},
-        {category: 'Lighting', type: 'Fluorescent Lamp', capacity: '18W', wattage: 18},
-        {category: 'Lighting', type: 'Incandescent Bulb', capacity: '40W', wattage: 40},
-        {category: 'Lighting', type: 'Incandescent Bulb', capacity: '60W', wattage: 60},
-        {category: 'Lighting', type: 'Night Light', capacity: '1W', wattage: 1},
-        {category: 'Lighting', type: 'Chandelier', capacity: '5 bulbs x 9W', wattage: 45},
-        {category: 'Electronics', type: 'Desktop Computer', capacity: 'Standard', wattage: 400},
-        {category: 'Electronics', type: 'Laptop', capacity: 'Standard', wattage: 65},
-        {category: 'Electronics', type: 'Wi-Fi Router', capacity: 'Standard', wattage: 10},
-        {category: 'Electronics', type: 'Mobile Phone Charger', capacity: 'Standard', wattage: 5},
-        {category: 'Electronics', type: 'Tablet Charger', capacity: 'Standard', wattage: 10},
-        {category: 'Electronics', type: 'Smart TV', capacity: '32"', wattage: 50},
-        {category: 'Electronics', type: 'Smart TV', capacity: '55"', wattage: 120},
-        {category: 'Electronics', type: 'CRT TV', capacity: '21"', wattage: 90},
-        {category: 'Electronics', type: 'Gaming Console', capacity: 'Standard', wattage: 200},
-        {category: 'Electronics', type: 'Home Theater', capacity: 'Standard', wattage: 250},
-        {category: 'Electronics', type: 'Projector', capacity: 'Standard', wattage: 300},
-        {category: 'Wellness', type: 'Air Purifier', capacity: 'Standard', wattage: 50},
-        {category: 'Wellness', type: 'Air Purifier with Humidifier', capacity: 'Standard', wattage: 75},
-        {category: 'Wellness', type: 'Aroma Diffuser', capacity: 'Standard', wattage: 10},
-        {category: 'Wellness', type: 'Electric Blanket', capacity: 'Standard', wattage: 60},
-        {category: 'Wellness', type: 'Dehumidifier', capacity: 'Standard', wattage: 300},
-        {category: 'Wellness', type: 'Massage Chair', capacity: 'Standard', wattage: 150},
-        {category: 'Wellness', type: 'Sleep Sound Machine', capacity: 'Standard', wattage: 10},
-    ];
-  
+    
+    const applianceCatalog = {{ catalog | tojson }};
+
     const categoryFilter = document.getElementById('appliance-category-filter');
-    const categories = [...new Set(appliances.map(a => a.category))];
+    const categories = [...new Set(applianceCatalog.map(a => a.category))];
+
     categories.forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = cat;
         categoryFilter.appendChild(opt);
     });
-  
+
     function renderApplianceOptions(filterCategory = '') {
         const select = document.getElementById('appliance-select');
         select.innerHTML = '<option value="">Select an appliance...</option>';
-        let filtered = appliances;
+        let filtered = applianceCatalog;
         if (filterCategory) {
             filtered = filtered.filter(a => a.category === filterCategory);
         }
         filtered.forEach(app => {
             const opt = document.createElement('option');
-            opt.value = `${app.category}|${app.type}|${app.capacity}`;
-            opt.textContent = app.type + (app.capacity ? ` (${app.capacity})` : "");
+            opt.value = app.id;
+            opt.textContent = `${app.type}${app.capacity ? ` (${app.capacity})` : ''}`;
             opt.dataset.wattage = app.wattage;
             select.appendChild(opt);
         });
     }
+
     renderApplianceOptions();
 
-    categoryFilter.addEventListener('change', function() {
+    categoryFilter.addEventListener('change', function () {
         renderApplianceOptions(this.value);
     });
-    
+
     const applianceSelect = document.getElementById('appliance-select');
-    applianceSelect.onchange = function() {
-        const val = this.value;
-        if (!val) {
+    applianceSelect.onchange = function () {
+        const selectedId = parseInt(this.value);
+        const app = applianceCatalog.find(a => a.id === selectedId);
+
+        if (!app) {
             document.getElementById('appliance-name').value = "";
             document.getElementById('appliance-wattage').value = "";
             document.getElementById('appliance-name').readOnly = false;
@@ -353,18 +229,15 @@
             document.getElementById('appliance-wattage').style.color = "#222";
             return;
         }
-        const [cat, type, capacity] = val.split('|');
-        const app = appliances.find(a => a.category === cat && a.type === type && a.capacity === capacity);
-        if (app) {
-            document.getElementById('appliance-name').value = app.type + (app.capacity ? ` (${app.capacity})` : "");
-            document.getElementById('appliance-wattage').value = app.wattage;
-            document.getElementById('appliance-name').readOnly = true;
-            document.getElementById('appliance-wattage').readOnly = true;
-            document.getElementById('appliance-name').style.background = "#f3f3f3";
-            document.getElementById('appliance-wattage').style.background = "#f3f3f3";
-            document.getElementById('appliance-name').style.color = "#888";
-            document.getElementById('appliance-wattage').style.color = "#888";
-        }
+
+        document.getElementById('appliance-name').value = app.type + (app.capacity ? ` (${app.capacity})` : "");
+        document.getElementById('appliance-wattage').value = app.wattage;
+        document.getElementById('appliance-name').readOnly = true;
+        document.getElementById('appliance-wattage').readOnly = true;
+        document.getElementById('appliance-name').style.background = "#f3f3f3";
+        document.getElementById('appliance-wattage').style.background = "#f3f3f3";
+        document.getElementById('appliance-name').style.color = "#888";
+        document.getElementById('appliance-wattage').style.color = "#888";
     };
 
     // Hours per day slider logic
@@ -425,6 +298,45 @@
             }
         };
     });
+
+    function toggleApplianceStatus(applianceId, isChecked) {
+    const status = isChecked ? 'on' : 'off';
+
+    fetch('/appliances/toggle_appliance_status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `appliance_id=${encodeURIComponent(applianceId)}&status=${encodeURIComponent(status)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('❌ Failed to update appliance status.');
+            }
+        })
+        .catch(error => {
+            console.error('⚠️ Error updating status:', error);
+        });
+    }
+    
+    function deleteAppliance(applianceId) {
+        if (!confirm("Are you sure you want to delete this appliance?")) return;
+
+        fetch(`/appliances/delete_appliance/${applianceId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(res => {
+            if (res.redirected) {
+                window.location.href = res.url;
+            } else {
+                alert("Failed to delete appliance.");
+            }
+        });
+    }
     </script>
 </body>
 </html> 

@@ -1,50 +1,48 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from app import db, bcrypt
 from flask_login import login_user, logout_user, login_required
-from database.config import mysql_path
-from app.models import User
+from app import db, bcrypt
+from app.models import User 
 
 access = Blueprint('access', __name__)
 
-@access.route("/login", methods=["GET", "POST"])
+@access.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        email=request.get.form('email')
-        password=request.get.form('password')
-
-        user=User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
             flash("Logged in successfully", "success")
-
-            return redirect(url_for(""))
-        
+            return redirect(url_for("home.home_dashboard"))
         else:
-            flash("Login failed. Check your email/password.", "anger")
-    return render_template("login.hmtl")
+            flash("Login failed. Check your email/password.", "danger")
+
+    return render_template("login.html")
 
 @access.route("/register", methods=["GET", "POST"])
 def register():
-    if request.metohd == "POST":
-
-        form_data=request.form.to_dict()
-
-        email=request.get.form('email')
-        username=request.get.form('username')
+    if request.method == "POST":
+        form_data = request.form.to_dict()
         
-        password=password_verification()
+        fullname = request.form.get('fullname')
+        email = request.form.get('email')
+        username = request.form.get('username')
+
+        password = password_verification()
         if not password:
             return render_template("register.html", form=form_data)
-        
-        existing_user=User.query.filter_by(email=email).first()
+
+        existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash("Email already exist!", "anger")
+            flash("Email already exists!", "danger")
             return render_template("register.html", form=form_data)
 
-        hashed_password=bcrypt.generate_password_hash(password).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        new_user=User(
+        new_user = User(
+            fullname=fullname,
             email=email,
             username=username,
             password=hashed_password
@@ -53,16 +51,17 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Account has been made!", "success")
-        return redirect(url_for(access.login))
+        flash("Account has been created!", "success")
+        return redirect(url_for('access.login'))
+
+    return render_template("register.html")
 
 def password_verification():
-
-    password=request.get.form("password")
-    v_password=request.get.form("verify_password")
+    password = request.form.get("password")
+    v_password = request.form.get("verify_password")
 
     if password != v_password:
-        flash("Password do not match", "danger")
+        flash("Passwords do not match.", "danger")
         return None
-    
+
     return password

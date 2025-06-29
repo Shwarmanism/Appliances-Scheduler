@@ -1,13 +1,13 @@
-from flask import Blueprint, render_templatee, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
-from models import Appliances
+from app.models import Appliances
 import seaborn as sns
 import matplotlib.pyplot as plt
 import io
 
 analytics = Blueprint('analytics', __name__)
 
-# @analytics.route("analytics_tab", methods=["GET", "POST"] )
+# @analytics.route("analytics", methods=["GET", "POST"] )
 # def analytics_t():
 
 

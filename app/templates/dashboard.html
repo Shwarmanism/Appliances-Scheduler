@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volt Vortex Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/dashboard.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
 </head>
 <body>
     <input type="checkbox" id="sidebar-toggle" hidden>
@@ -26,51 +26,53 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard" class="nav-link active" aria-current="page">
-                    <span class="icon"><img src="../static/Home.svg" alt="Dashboard" class="sidebar-icon-svg"></span>
+                    <span class="icon"><img src="{{ url_for('static', filename='Home.svg') }}" alt="Dashboard" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Dashboard</span>
                 </a>
                 <a href="/appliances" class="nav-link">
-                    <span class="icon"><img src="../static/Appliances.svg" alt="Appliances" class="sidebar-icon-svg"></span>
+                    <span class="icon"><img src="{{ url_for('static', filename='Appliances.svg') }}" alt="Appliances" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Appliances</span>
                 </a>
-                <a href="/optimization" class="nav-link">
-                    <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
+                <a href="/optimize" class="nav-link">
+                    <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Optimization" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Optimization</span>
                 </a>
                 <a href="/scheduling" class="nav-link">
-                    <span class="icon"><img src="../static/Report.svg" alt="Scheduling" class="sidebar-icon-svg"></span>
+                    <span class="icon"><img src="{{ url_for('static', filename='Report.svg') }}" alt="Scheduling" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Scheduling</span>
                 </a>
                 <a href="/analytics" class="nav-link">
-                    <span class="icon"><img src="../static/Analytics.svg" alt="Analytics" class="sidebar-icon-svg"></span>
+                    <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Analytics" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Analytics</span>
                 </a>
                 <a href="/settings" class="nav-link">
-                    <span class="icon"><img src="../static/Profile.svg" alt="Settings" class="sidebar-icon-svg"></span>
+                    <span class="icon"><img src="{{ url_for('static', filename='Profile.svg') }}" alt="Settings" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Settings</span>
                 </a>
             </nav>
         </aside>
         <main class="main-content gradient-bg">
             <section class="greeting">
-                <h1><span class="gradient-text">Welcome, Bien Jeric</span></h1>
+                <h1><span class="gradient-text">Welcome, {{ current_user.username }}</span></h1>
             </section>
+
             <section class="summary-cards">
                 <div class="summary-card glass">
                     <div class="summary-card-bar"></div>
                     <div class="summary-content">
                         <div class="summary-title">Total kWh Consumed</div>
-                        <div class="summary-value">1,234 kWh</div>
+                        <div class="summary-value">{{ total_kwh }} kWh</div>
                     </div>
                 </div>
                 <div class="summary-card glass">
                     <div class="summary-card-bar"></div>
                     <div class="summary-content">
                         <div class="summary-title">Estimated Cost (Avg/Month)</div>
-                        <div class="summary-value">PHP 20,000</div>
+                        <div class="summary-value">PHP {{ estimated_cost }}</div>
                     </div>
                 </div>
             </section>
+
             <section class="chart-section">
                 <div class="chart-placeholder glass shimmer">
                     <div class="chart-placeholder-inner">
@@ -78,14 +80,15 @@
                     </div>
                 </div>
             </section>
+
             <section class="dashboard-lower">
                 <div class="top-appliances glass">
                     <div class="card-bar"></div>
                     <h2>Top 3 Most Energy-Consuming Appliances</h2>
                     <ol>
-                        <li>Air Conditioner - 400 kWh</li>
-                        <li>Refrigerator - 250 kWh</li>
-                        <li>Washing Machine - 180 kWh</li>
+                        {% for appliance in top_appliances %}
+                            <li>{{ appliance.category }} - {{ appliance.monthly_energy }} kWh</li>
+                        {% endfor %}
                     </ol>
                 </div>
                 <div class="notifications-advice">
@@ -93,15 +96,20 @@
                         <div class="card-bar"></div>
                         <h2>Notifications</h2>
                         <ul>
-                            <li>You exceeded your 5 kWh limit yesterday</li>
+                            {% if notification %}
+                                <li>{{ notification }}</li>
+                            {% else %}
+                                <li>You're within your daily limit. Good job!</li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
             </section>
+
             <div class="advice-quote">
-                <strong>Energy-Saving Advice:</strong> Turn off appliances when not in use to save energy!
+                <strong>Energy-Saving Advice:</strong> {{ random_tip }}
             </div>
         </main>
     </div>
 </body>
-</html> 
+</html>
