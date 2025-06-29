@@ -62,7 +62,7 @@
             </div>
             <div class="appliance-list">
                 <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" />
+                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
                     <div class="appliance-info">
                         <div class="appliance-title-row">
                             <span class="appliance-title">Television</span>
@@ -75,7 +75,7 @@
                     <button class="delete-appliance-btn" title="Delete">&times;</button>
                 </div>
                 <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" />
+                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
                     <div class="appliance-info">
                         <div class="appliance-title-row">
                             <span class="appliance-title">Refrigerator</span>
@@ -88,7 +88,7 @@
                     <button class="delete-appliance-btn" title="Delete">&times;</button>
                 </div>
                 <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" />
+                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
                     <div class="appliance-info">
                         <div class="appliance-title-row">
                             <span class="appliance-title">Microwave</span>
@@ -101,7 +101,7 @@
                     <button class="delete-appliance-btn" title="Delete">&times;</button>
                 </div>
                 <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" />
+                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
                     <div class="appliance-info">
                         <div class="appliance-title-row">
                             <span class="appliance-title">Air Conditioner</span>
@@ -114,11 +114,24 @@
                     <button class="delete-appliance-btn" title="Delete">&times;</button>
                 </div>
                 <div class="appliance-card">
-                    <input type="checkbox" class="appliance-toggle" />
+                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
                     <div class="appliance-info">
                         <div class="appliance-title-row">
                             <span class="appliance-title">Washing machine</span>
                             <span class="appliance-status-dot green"></span>
+                        </div>
+                        <div>Energy: 0.00kWh</div>
+                        <div>Time: 00:00:00</div>
+                    </div>
+                    <div class="appliance-cost">Cost: Php 0.00</div>
+                    <button class="delete-appliance-btn" title="Delete">&times;</button>
+                </div>
+                <div class="appliance-card">
+                    <input type="checkbox" class="appliance-toggle" name="appliance-status" value="off" onchange="this.value=this.checked?'on':'off'" />
+                    <div class="appliance-info">
+                        <div class="appliance-title-row">
+                            <span class="appliance-title">Electric Kettle</span>
+                            <span class="appliance-status-dot yellow"></span>
                         </div>
                         <div>Energy: 0.00kWh</div>
                         <div>Time: 00:00:00</div>
@@ -164,17 +177,42 @@
                     <label for="appliance-wattage">Wattage</label>
                     <input type="number" id="appliance-wattage" name="appliance-wattage" readonly style="background:#f3f3f3;color:#888;">
                 </div>
+                <!-- Hours per Day -->
                 <div class="form-group">
-                    <label for="appliance-hours">Hours/Day</label>
-                    <input type="number" id="appliance-hours" name="appliance-hours" min="1" max="24" required placeholder="e.g. 5">
+                    <div class="slider-card glass">
+                        <div class="slider-label">Hours used per day</div>
+                        <div class="slider-desc">How long do you operate the appliance daily?</div>
+                        <div class="slider-value" id="hoursPerDayValue">1</div>
+                    </div>
+                    <div class="slider-controls">
+                        <button type="button" class="slider-btn" id="hoursMinus">&#8722;</button>
+                        <input type="range" id="appliance-hours" name="appliance-hours" min="1" max="24" value="1">
+                        <button type="button" class="slider-btn" id="hoursPlus">&#43;</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="appliance-days">Days/Week</label>
-                    <input type="number" id="appliance-days" name="appliance-days" min="1" max="7" required placeholder="e.g. 5">
+                <!-- Days per Week -->
+                <div class="form-group" id="daysPerWeekGroup">
+                    <label>Days used per week</label>
+                    <div class="days-row" id="daysPerWeekRow">
+                        <button type="button" class="day-pill" data-day="SU">SU</button>
+                        <button type="button" class="day-pill" data-day="M">M</button>
+                        <button type="button" class="day-pill" data-day="T">T</button>
+                        <button type="button" class="day-pill" data-day="W">W</button>
+                        <button type="button" class="day-pill" data-day="TH">TH</button>
+                        <button type="button" class="day-pill" data-day="F">F</button>
+                        <button type="button" class="day-pill" data-day="S">S</button>
+                    </div>
+                    <input type="hidden" id="appliance-days" name="appliance-days" value="[]">
                 </div>
-                <div class="form-group">
-                    <label for="appliance-weeks">Weeks/Month</label>
-                    <input type="number" id="appliance-weeks" name="appliance-weeks" min="1" max="4" required placeholder="e.g. 4">
+                <!-- Weeks per Month -->
+                <div class="form-group" id="weeksPerMonthGroup">
+                    <label>Weeks used per month</label>
+                    <div class="weeks-row" id="weeksPerMonthRow">
+                        <label class="week-radio"><input type="radio" name="appliance-weeks" value="1"><span>1</span></label>
+                        <label class="week-radio"><input type="radio" name="appliance-weeks" value="2"><span>2</span></label>
+                        <label class="week-radio"><input type="radio" name="appliance-weeks" value="3"><span>3</span></label>
+                        <label class="week-radio"><input type="radio" name="appliance-weeks" value="4"><span>4</span></label>
+                    </div>
                 </div>
                 <button type="submit" class="submit-btn">Add Appliance</button>
             </form>
@@ -328,6 +366,65 @@
             document.getElementById('appliance-wattage').style.color = "#888";
         }
     };
+
+    // Hours per day slider logic
+    const hoursSlider = document.getElementById('appliance-hours');
+    const hoursValue = document.getElementById('hoursPerDayValue');
+    document.getElementById('hoursMinus').onclick = () => {
+        hoursSlider.value = Math.max(1, parseInt(hoursSlider.value) - 1);
+        hoursSlider.dispatchEvent(new Event('input'));
+    };
+    document.getElementById('hoursPlus').onclick = () => {
+        hoursSlider.value = Math.min(24, parseInt(hoursSlider.value) + 1);
+        hoursSlider.dispatchEvent(new Event('input'));
+    };
+    hoursSlider.oninput = function() {
+        hoursValue.textContent = this.value;
+    };
+
+    // Disable days and weeks until hours is set
+    const daysGroup = document.getElementById('daysPerWeekGroup');
+    const weeksGroup = document.getElementById('weeksPerMonthGroup');
+    daysGroup.style.pointerEvents = 'none';
+    daysGroup.style.opacity = '0.5';
+    weeksGroup.style.pointerEvents = 'none';
+    weeksGroup.style.opacity = '0.5';
+    function enableDaysWeeks() {
+        daysGroup.style.pointerEvents = '';
+        daysGroup.style.opacity = '1';
+        weeksGroup.style.pointerEvents = '';
+        weeksGroup.style.opacity = '1';
+    }
+    // Enable after hours is changed from default
+    hoursSlider.oninput = function() {
+        hoursValue.textContent = this.value;
+        if (parseInt(this.value) > 0) enableDaysWeeks();
+    };
+
+    // Disable weeks until days are selected
+    weeksGroup.style.pointerEvents = 'none';
+    weeksGroup.style.opacity = '0.5';
+    function enableWeeks() {
+        weeksGroup.style.pointerEvents = '';
+        weeksGroup.style.opacity = '1';
+    }
+    // Days per week pills logic
+    const daysRow = document.getElementById('daysPerWeekRow');
+    const daysInput = document.getElementById('appliance-days');
+    daysRow.querySelectorAll('.day-pill').forEach(btn => {
+        btn.onclick = function() {
+            this.classList.toggle('selected');
+            const selected = Array.from(daysRow.querySelectorAll('.day-pill.selected')).map(b => b.dataset.day);
+            daysInput.value = JSON.stringify(selected);
+            if (selected.length > 0) enableWeeks();
+            else {
+                weeksGroup.style.pointerEvents = 'none';
+                weeksGroup.style.opacity = '0.5';
+                // Uncheck all week radios
+                document.querySelectorAll('input[name="appliance-weeks"]').forEach(r => r.checked = false);
+            }
+        };
+    });
     </script>
 </body>
 </html> 
