@@ -229,7 +229,6 @@ body {
     padding: 56px 7vw 56px 7vw;
     display: flex;
     flex-direction: column;
-    gap: 48px;
     min-width: 0;
     background: transparent;
     transition: margin-left 0.3s cubic-bezier(.4,2,.6,1), width 0.3s cubic-bezier(.4,2,.6,1);

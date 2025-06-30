@@ -1,0 +1,301 @@
+:root {
+    --analytics-card-bar: linear-gradient(90deg, #ffdf00 0%, #f25622 100%);
+    --analytics-highlight: #f25622;
+    --analytics-savings: #ffdf00;
+}
+
+.analytics-cards {
+    display: flex;
+    gap: 32px;
+    margin: 32px 0 24px 0;
+    justify-content: flex-start;
+}
+.analytics-card {
+    flex: 1 1 0;
+    min-width: 220px;
+    max-width: 320px;
+    padding: 24px 28px 20px 28px;
+    border-radius: 18px;
+    box-shadow: var(--card-shadow);
+    background: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 0;
+}
+.analytics-card-bar {
+    height: 6px;
+    width: 48px;
+    border-radius: 6px;
+    background: var(--analytics-card-bar);
+    margin-bottom: 18px;
+}
+.analytics-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gray);
+    margin-bottom: 8px;
+}
+.analytics-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.analytics-charts {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+.analytics-chart {
+    flex: 1 1 0;
+    min-width: 320px;
+    padding: 24px 20px 20px 20px;
+    border-radius: 18px;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.chart-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--gray);
+    margin-bottom: 12px;
+}
+.chart-placeholder {
+    width: 100%;
+    height: 220px;
+    background: #f7f7f7;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 1.1rem;
+    border: 1.5px dashed #ffdf00;
+    margin-bottom: 0;
+}
+.chart-placeholder-title {
+    color: #bbb;
+    font-size: 1.1rem;
+}
+
+.analytics-highlights {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+.highlight-card, .savings-card {
+    flex: 1 1 0;
+    min-width: 320px;
+    padding: 24px 20px 20px 20px;
+    border-radius: 18px;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.highlight-title {
+    color: var(--gray);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.highlight-value {
+    color: var(--primary);
+    font-weight: 700;
+}
+.savings-title {
+    color: var(--gray);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.savings-value {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+.savings-amount {
+    color: var(--analytics-savings);
+    font-weight: 800;
+}
+.savings-reason {
+    color: var(--analytics-highlight);
+    font-weight: 700;
+}
+#savings-graph {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.alert {
+    margin-top: 8px;
+    color: #fff;
+    background: #f25622;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    display: inline-block;
+}
+.alert-text {
+    color: #fff;
+}
+
+.trends-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 10px;
+    width: 100%;
+}
+.trend-item, .trend-item-wide {
+    background: rgba(255,255,255,0.85);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px 0 rgba(242,86,34,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.08);
+    padding: 18px 14px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+    border-left: 4px solid var(--primary);
+}
+.trend-item:hover, .trend-item-wide:hover {
+    box-shadow: 0 8px 32px 0 rgba(242,86,34,0.22), 0 2px 12px 0 rgba(0,0,0,0.10);
+}
+.trend-icon {
+    font-size: 1.7rem;
+    margin-bottom: 6px;
+}
+.trend-label {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--gray);
+    margin-bottom: 2px;
+}
+.trend-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.savings-breakdown {
+    display: flex;
+    gap: 18px;
+    width: 100%;
+    margin-top: 10px;
+}
+.savings-type-card {
+    flex: 1 1 0;
+    background: rgba(255,255,255,0.85);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(255,223,0,0.08);
+    padding: 16px 12px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 4px solid var(--analytics-savings);
+}
+.savings-type-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--analytics-savings);
+    margin-bottom: 6px;
+}
+
+.trend-item-wide {
+    grid-column: span 2;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+.trend-item-wide .trend-icon {
+    margin-right: 18px;
+    font-size: 2rem;
+}
+.trend-item-wide .trend-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-right: 12px;
+}
+.trend-item-wide .trend-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.savings-simple-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+.savings-legend {
+    display: block;
+    font-size: 0.98rem;
+    color: var(--gray);
+    font-weight: 400;
+    margin-top: 2px;
+}
+
+.gray-text {
+    color: var(--gray);
+    font-weight: 600;
+}
+.savings-total-green {
+    color: #1db954;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    margin-top: 2px;
+}
+.overused-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    width: 100%;
+}
+.overused-list li {
+    background: #f7f7f7;
+    color: var(--primary);
+    border-radius: 16px;
+    padding: 6px 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 1px 4px rgba(242,86,34,0.08);
+    border: 1.5px solid #ffe0a3;
+}
+.trend-item-wide {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+@media (max-width: 1100px) {
+    .analytics-cards, .analytics-charts, .analytics-highlights {
+        flex-direction: column;
+        gap: 18px;
+    }
+    .analytics-card, .analytics-chart, .highlight-card, .savings-card {
+        min-width: unset;
+        width: 100%;
+    }
+}
+@media (max-width: 900px) {
+    .trends-grid {
+        grid-template-columns: 1fr;
+    }
+    .savings-breakdown {
+        flex-direction: column;
+        gap: 12px;
+    }
+} 

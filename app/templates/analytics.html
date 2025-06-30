@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | Volt Vortex</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/dashboard.css">
+    <link rel="stylesheet" href="../static/analytics.css">
+    <link rel="stylesheet" href="../static/appliances.css">
+</head>
+<body>
+    <input type="checkbox" id="sidebar-toggle" hidden>
+    <div class="dashboard-container">
+        <aside class="sidebar glass">
+            <div class="sidebar-top">
+                <label for="sidebar-toggle" class="sidebar-hamburger-btn" aria-label="Toggle sidebar">
+                    <svg class="hamburger-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                        <rect y="7" width="32" height="3" rx="1.5" fill="#ffdf00" />
+                        <rect y="14.5" width="32" height="3" rx="1.5" fill="#ffdf00" />
+                        <rect y="22" width="32" height="3" rx="1.5" fill="#ffdf00" />
+                    </svg>
+                </label>
+                <div class="sidebar-logo-block">
+                    <div class="sidebar-logo new-logo">⚡</div>
+                    <div class="sidebar-title">VOLT VORTEX</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-link">
+                    <span class="icon"><img src="../static/Home.svg" alt="Dashboard" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="../appliances.html" class="nav-link">
+                    <span class="icon"><img src="../static/Appliances.svg" alt="Appliances" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Appliances</span>
+                </a>
+                <a href="../optimization.html" class="nav-link">
+                    <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Optimization</span>
+                </a>
+                <a href="../scheduling.html" class="nav-link">
+                    <span class="icon"><img src="../static/Report.svg" alt="Scheduling" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Scheduling</span>
+                </a>
+                <a href="#" class="nav-link active" aria-current="page">
+                    <span class="icon"><img src="../static/Analytics.svg" alt="Analytics" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon"><img src="../static/Profile.svg" alt="Settings" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+        </aside>
+        <main class="main-content gradient-bg">
+            <div class="appliances-title">Analytics Overview</div>
+            <section class="greeting" style="display:none;">
+                <h1><span class="gradient-text">Analytics Overview</span></h1>
+            </section>
+
+            <section class="analytics-cards">
+                <div class="analytics-card glass">
+                    <div class="analytics-card-bar"></div>
+                    <div class="analytics-content">
+                        <div class="analytics-title">Total Appliances Tracked</div>
+                        <div class="analytics-value">12</div>
+                    </div>
+                </div>
+                <div class="analytics-card glass">
+                    <div class="analytics-card-bar"></div>
+                    <div class="analytics-content">
+                        <div class="analytics-title">Total Estimated Daily Consumption</div>
+                        <div class="analytics-value">34.2 kWh</div>
+                    </div>
+                </div>
+                <div class="analytics-card glass">
+                    <div class="analytics-card-bar"></div>
+                    <div class="analytics-content">
+                        <div class="analytics-title">Total Estimated Monthly Cost</div>
+                        <div class="analytics-value">PHP 1,200</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="analytics-charts">
+                <div class="analytics-chart glass">
+                    <div class="chart-title">Appliance Usage Breakdown</div>
+                    <div class="chart-placeholder" id="pie-chart">
+                        <!-- Pie chart will be rendered here -->
+                        <span class="chart-placeholder-title">Pie Chart Placeholder</span>
+                    </div>
+                </div>
+                <div class="analytics-chart glass">
+                    <div class="chart-title">Time-based Usage</div>
+                    <div class="chart-placeholder" id="line-chart">
+                        <!-- Line/Bar chart will be rendered here -->
+                        <span class="chart-placeholder-title">Line/Bar Chart Placeholder</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="analytics-highlights">
+                <div class="highlight-card glass">
+                    <div class="highlight-title">Highlights & Trends</div>
+                    <div class="trends-grid">
+                        <div class="trend-item">
+                            <div class="trend-icon">📈</div>
+                            <div class="trend-label">High Consumption Days</div>
+                            <div class="trend-value">June 5, June 12</div>
+                        </div>
+                        <div class="trend-item">
+                            <div class="trend-icon">💡</div>
+                            <div class="trend-label">Best Saving Day</div>
+                            <div class="trend-value">June 10</div>
+                        </div>
+                        <div class="trend-item trend-item-wide">
+                            <div class="trend-icon">⚡</div>
+                            <div class="trend-label">Overused Appliances</div>
+                            <ul class="overused-list">
+                                <li>Air Conditioner</li>
+                                <li>Water Heater</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="savings-card glass">
+                    <div class="savings-title">Savings</div>
+                    <div class="savings-total-green">Total saved this month: PHP 45</div>
+                    <div class="chart-placeholder" id="savings-graph">
+                        <span class="chart-placeholder-title">Savings Line Graph </span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html> 

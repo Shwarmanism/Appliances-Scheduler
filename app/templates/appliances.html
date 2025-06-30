@@ -170,6 +170,19 @@
             </form>
         </div>
     </div>
+    <!-- Deletion notification toast -->
+    <div id="deleteNotif" class="delete-toast" style="display:none;">Appliance deleted successfully.</div>
+    <!-- Deletion confirmation modal -->
+    <div id="deleteConfirmModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content glass" style="max-width:340px;align-items:center;">
+            <h2>Delete Appliance?</h2>
+            <p style="margin-bottom:24px;">Are you sure you want to delete this appliance?</p>
+            <div style="display:flex;gap:18px;justify-content:center;">
+                <button id="confirmDeleteBtn" class="submit-btn" style="width:100px;">Yes</button>
+                <button id="cancelDeleteBtn" class="slider-btn" style="width:100px;">No</button>
+            </div>
+        </div>
+    </div>
     <script>
     // Modal logic
     const openBtn = document.getElementById('openAddApplianceModal');
@@ -337,6 +350,36 @@
             }
         });
     }
+
+    // Deletion notification logic
+    function showDeleteNotif() {
+        const notif = document.getElementById('deleteNotif');
+        notif.style.display = 'block';
+        setTimeout(() => { notif.style.display = 'none'; }, 2200);
+    }
+
+    // Deletion confirmation modal logic
+    let pendingDeleteBtn = null;
+    const deleteModal = document.getElementById('deleteConfirmModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    document.querySelectorAll('.delete-appliance-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            pendingDeleteBtn = btn;
+            deleteModal.style.display = 'flex';
+        });
+    });
+    cancelDeleteBtn.onclick = function() {
+        deleteModal.style.display = 'none';
+        pendingDeleteBtn = null;
+    };
+    confirmDeleteBtn.onclick = function() {
+        deleteModal.style.display = 'none';
+        showDeleteNotif();
+        // Optionally, add your deletion logic here (e.g., remove card, call backend)
+        pendingDeleteBtn = null;
+    };
     </script>
 </body>
 </html> 

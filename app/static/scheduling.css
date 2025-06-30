@@ -1,0 +1,321 @@
+/* Scheduling Tab Styles */
+.scheduling-main {
+    padding: 56px 12vw 56px 7vw;
+    background: #f7f7f7;
+    border-radius: 32px 0 0 0;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    transition: margin-left 0.3s cubic-bezier(.4,2,.6,1), width 0.3s cubic-bezier(.4,2,.6,1);
+}
+#sidebar-toggle:checked ~ .dashboard-container .scheduling-main {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+}
+@media (max-width: 900px) {
+    .scheduling-main {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+    }
+}
+.scheduling-desc {
+    font-size: 1.08rem;
+    color: #444;
+    background: #fffbe6;
+    border-left: 5px solid #ffd600;
+    border-radius: 10px;
+    padding: 18px 28px;
+    margin-bottom: 18px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(255,223,0,0.07);
+}
+.scheduling-cards-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.scheduling-rate-card, .scheduling-options-card {
+    flex: 1 1 340px;
+    min-width: 320px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    border: 1.5px solid #e0e0e0;
+}
+.scheduling-rate-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f25622;
+    margin-bottom: 10px;
+}
+.scheduling-hourly-rates {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 1.01rem;
+    color: #333;
+}
+.hour-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 24px;
+    margin-bottom: 2px;
+    align-items: center;
+}
+.hour-row span {
+    min-width: 90px;
+    display: inline-block;
+    font-weight: 600;
+    color: #222;
+}
+.scheduling-options-card label {
+    font-weight: 600;
+    color: #222;
+}
+.scheduling-options-card select {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+.schedule-result-section {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 32px 32px 24px 32px;
+    border: 1.5px solid #e0e0e0;
+    margin-top: 18px;
+    min-height: 120px;
+}
+/* Modal Styles (reuse from appliances.css) */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+    padding: 32px 36px 28px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    min-width: 320px;
+    max-width: 95vw;
+    align-items: flex-start;
+}
+.modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    color: #f25622;
+    cursor: pointer;
+    font-weight: 700;
+}
+.modal-content h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f25622;
+    margin-bottom: 8px;
+}
+.submit-btn, .add-appliance-btn {
+    background: #f25622;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 8px;
+}
+.submit-btn:hover, .add-appliance-btn:hover {
+    background: #ffdf00;
+    color: #f25622;
+}
+@media (max-width: 1200px) {
+    .scheduling-main { max-width: 100%; }
+    .scheduling-rate-card, .scheduling-options-card { padding: 18px 10px; }
+}
+@media (max-width: 900px) {
+    .scheduling-cards-row { flex-direction: column; gap: 18px; }
+}
+@media (max-width: 700px) {
+    .scheduling-main { padding: 24px 2vw 24px 2vw; }
+    .scheduling-rate-card, .scheduling-options-card, .schedule-result-section { padding: 12px 4vw; }
+    .modal-content { padding: 18px 8px; }
+}
+.scheduling-rate-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 8px;
+    font-size: 1.05rem;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px 0 rgba(242,86,34,0.22), 0 4px 24px 0 rgba(255,223,0,0.13);
+}
+.scheduling-rate-table th, .scheduling-rate-table td {
+    padding: 14px 18px;
+    text-align: left;
+}
+.scheduling-rate-table th {
+    background: #f25622;
+    color: #fff;
+    font-weight: 800;
+    border-bottom: 2.5px solid #ffdf00;
+    letter-spacing: 0.5px;
+}
+.scheduling-rate-table td {
+    background: #fffbe6;
+    color: #222;
+    border-bottom: 1.5px solid #ffe082;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.scheduling-rate-table tr:nth-child(even) td {
+    background: #fff;
+}
+.scheduling-rate-table tr:last-child td {
+    border-bottom: none;
+}
+.scheduling-rate-table tbody tr:hover td {
+    background: #ffdf00;
+    color: #f25622;
+}
+@media (max-width: 700px) {
+    .scheduling-rate-table th, .scheduling-rate-table td {
+        padding: 10px 6px;
+        font-size: 0.98rem;
+    }
+}
+.optimized-btn, .custom-btn {
+    background: #227be6 !important;
+    color: #fff !important;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 8px;
+}
+.optimized-btn:hover, .optimized-btn:focus, .custom-btn:hover, .custom-btn:focus {
+    background: #ffdf00 !important;
+    color: #227be6 !important;
+}
+.schedule-summary-bar {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    background: #fffbe6;
+    border-radius: 10px;
+    padding: 18px 0 12px 0;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(255,223,0,0.08);
+}
+.summary-item {
+    font-size: 1.13rem;
+    font-weight: 700;
+    color: #f25622;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.summary-label {
+    color: #888;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+.summary-value {
+    color: #00b86b;
+    font-weight: 800;
+    font-size: 1.18rem;
+}
+.schedule-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    justify-content: flex-start;
+}
+.schedule-appliance-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(34,123,230,0.10), 0 1.5px 8px rgba(242,86,34,0.08);
+    padding: 22px 28px 18px 28px;
+    min-width: 210px;
+    max-width: 260px;
+    flex: 1 1 210px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 6px solid #f25622;
+    border-top: 2.5px solid #ffdf00;
+    margin-bottom: 8px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.schedule-appliance-card:hover {
+    box-shadow: 0 6px 24px rgba(34,123,230,0.18), 0 2.5px 12px rgba(242,86,34,0.13);
+    border-left: 6px solid #227be6;
+}
+.appliance-title {
+    font-size: 1.13rem;
+    font-weight: 800;
+    color: #227be6;
+    margin-bottom: 6px;
+}
+.appliance-time {
+    font-size: 1.01rem;
+    color: #888;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+.appliance-cost {
+    font-size: 1.08rem;
+    color: #00b86b;
+    font-weight: 700;
+    margin-top: 2px;
+}
+@media (max-width: 900px) {
+    .schedule-cards-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+    .schedule-appliance-card {
+        max-width: 100%;
+        min-width: 0;
+        width: 100%;
+    }
+    .schedule-summary-bar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 12px 10px;
+    }
+}
+.schedule-section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f25622;
+    text-align: center;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+} 
