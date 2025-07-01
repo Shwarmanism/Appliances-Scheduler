@@ -27,15 +27,34 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+    
+    @app.template_filter('format_hour')
+    def format_hour(hour):
+        if hour is None:
+            return "Invalid hour"
+        try:
+            hour = int(hour) % 24
+            suffix = "AM" if hour < 12 else "PM"
+            display = hour % 12
+            if display == 0:
+                display = 12
+            return f"{display}:00 {suffix}"
+        except (ValueError, TypeError):
+            return "Invalid hour"
 
     from app.routes.login_routes import access
     from app.routes.home_routes import home
     from app.routes.appliances_routes import appliances
     from app.routes.analytics_routes import analytics
+    from app.routes.optimization_routes import optimizer
+    from app.routes.daily_scheduler_routes import scheduler
 
     app.register_blueprint(access)
     app.register_blueprint(home)
     app.register_blueprint(appliances, url_prefix='/appliances')
+    app.register_blueprint(optimizer)
+    app.register_blueprint(scheduler)
     app.register_blueprint(analytics)
 
     return app
+
