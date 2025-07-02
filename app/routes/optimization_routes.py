@@ -40,7 +40,7 @@ def optimize_appliances():
 
             save_process = request.form.get('save_not')
 
-            if save_process:
+            if save_process == "save":
                 combination_id = f'Combi-{uuid4().hex[:4]}'
                 for appliance in optimized:
                     entry = OptimizedAppliances(

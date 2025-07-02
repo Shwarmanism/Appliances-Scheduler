@@ -12,7 +12,7 @@ def home_dashboard():
 
     on_appliances = [a for a in user_appliances if a.status == 'on']
     total_kwh = sum(a.monthly_energy or 0 for a in on_appliances)
-    estimated_cost = round(total_kwh * 11, 2)  # random value muna
+    estimated_cost = round(total_kwh * 6, 2)  # random value muna
     average_usage = round(total_kwh / len(on_appliances), 2) if on_appliances else 0
 
     top_appliances = sorted(on_appliances, key=lambda x: x.monthly_energy or 0, reverse=True)[:3]

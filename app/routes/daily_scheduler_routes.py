@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import current_user, login_required
-from app.models import Appliances, OptimizedAppliances
+from app.models import Appliances, OptimizedAppliances, ScheduledApplianceUsage
 import heapq
 from app import db
 
@@ -31,6 +31,7 @@ def schedule():
             selected_type = request.form.get('selected_type') 
             time_start = int(request.form.get('time_start') or 0)
             time_end = int(request.form.get('time_end') or 23)
+            action_save = request.form.get('action_save')
 
             print("⏰ Received time range:")
             print("   time_start:", time_start)
@@ -57,7 +58,7 @@ def schedule():
                 selected_ids = request.form.getlist('selected_appliances')
 
             selected = [a for a in appliances if str(a.appliances_id) in selected_ids]
-
+            
             for a in selected:
                 if a.hours_used is None:
                     flash(f"No usage hours set for {a.model}.", "warning")
@@ -69,7 +70,26 @@ def schedule():
                     time_start,
                     time_end
                 )
+            
+            if selected_type == 'optimized' and action_save == 'save':
+                for a in selected:
+                    result = schedule.get(a.model)
+                    if result:
+                        energy_kwh = round((result['duration'] * a.wattage) / 1000, 2)
+                        usage = ScheduledApplianceUsage(
+                            user_id=current_user.user_id,
+                            appliance_id=a.appliances_id,
+                            start_hour=result['start_hour'],
+                            duration=result['duration'],
+                            cost=result['cost'],
+                            energy_kwh=energy_kwh,
+                            is_partial=result['is_partial'],
+                            hours_used=",".join(str(h) for h in result['hours'])
+                        )
+                        db.session.add(usage)
 
+                db.session.commit()
+            
             total_cost = sum(info['cost'] for info in schedule.values())
             total_energy = sum(
                 round((info['duration'] * appliance.wattage) / 1000, 2)

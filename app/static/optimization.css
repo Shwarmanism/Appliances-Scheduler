@@ -17,10 +17,15 @@
     }
 }
 .optimization-desc {
-    margin-bottom: 18px;
     font-size: 1.08rem;
-    color: #6e6e6e;
-    padding-left: 8px;
+    color: #444;
+    background: #fffbe6;
+    border-left: 5px solid #ffd600;
+    border-radius: 10px;
+    padding: 18px 28px;
+    margin-bottom: 18px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(255,223,0,0.07);
 }
 .optimization-cards-row {
     display: flex;
@@ -33,30 +38,36 @@
 }
 .optimization-cap-card {
     flex: 1 1 0;
-    min-width: 420px;
+    min-width: 320px;
     max-width: 540px;
-    padding: 18px 32px 16px 24px;
+    padding: 14px 24px 12px 24px;
     border-radius: 18px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
     min-height: 72px;
-    white-space: nowrap;
     background: #fff;
 }
 .optimization-cap-card form {
     display: flex;
     align-items: center;
-    gap: 18px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     width: 100%;
-    justify-content: flex-start;
+    justify-content: space-evenly;
+}
+.optimization-cap-card input[type="number"] {
+    width: 80px;
+    min-width: 0;
+    max-width: 100px;
+    box-sizing: border-box;
+}
+.optimization-cap-card span {
+    min-width: 0;
+    max-width: 80px;
     white-space: nowrap;
 }
 .optimization-cap-card .add-appliance-btn {
-    margin-left: 10px;
-    flex-shrink: 0;
-    margin-right: 8px;
+    margin-right: 0;
 }
 .optimization-savings-card {
     flex: 1 1 0;
@@ -149,6 +160,22 @@
         max-width: 100%;
         padding: 18px 12px 16px 12px;
     }
+    .optimization-cap-card {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        padding: 10px 4vw 10px 4vw;
+    }
+    .optimization-cap-card form {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .optimization-cap-card label,
+    .optimization-cap-card input,
+    .optimization-cap-card span,
+    .optimization-cap-card button {
+        font-size: 1rem;
+    }
 }
 #optNotif {
     display: none;
@@ -176,4 +203,87 @@
 @keyframes opt-toast-fadeout {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+#savePlanBtn, .save-plan-btn {
+    font-size: 1rem;
+    padding: 8px 22px;
+    border-radius: 8px;
+    border: 2px solid #1ca13a;
+    color: #fff;
+    background: #1ca13a;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px 0 rgba(28,161,58,0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+#savePlanBtn:hover, .save-plan-btn:hover {
+    background: #24d34a;
+    color: #fff;
+    box-shadow: 0 8px 24px 0 rgba(36,211,74,0.22);
+    transform: scale(1.06);
+}
+#saveNotif {
+    display: none;
+    background: #eaffea;
+    color: #1ca13a;
+    border: 2.5px solid #1ca13a;
+    border-left: 10px solid #1ca13a;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.13rem;
+    box-shadow: 0 6px 24px 0 rgba(28,161,58,0.18);
+    padding: 18px 38px 18px 54px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 10;
+    position: relative;
+    text-align: left;
+}
+#saveNotif .notif-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: #1ca13a;
+    font-weight: bold;
+}
+.save-toast-show {
+    display: block !important;
+    opacity: 1 !important;
+    animation: save-toast-fadein 0.3s, save-toast-fadeout 0.5s 2.5s;
+}
+@keyframes save-toast-fadein {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes save-toast-fadeout {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+#optimizeBtn {
+    font-size: 1.1rem;
+    padding: 10px 32px;
+    border-radius: 10px;
+    border: 2px solid #f25622;
+    color: #f25622;
+    background: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px 0 rgba(242,86,34,0.10);
+    transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+#optimizeBtn:hover:enabled {
+    background: #f25622 !important;
+    color: #fff !important;
+    border: 2px solid #f25622 !important;
+    box-shadow: 0 8px 24px 0 rgba(242,86,34,0.18);
+    transform: scale(1.06);
+}
+#optimizeBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: #f3f3f3;
+    color: #aaa;
+    border: 2px solid #ccc;
 }

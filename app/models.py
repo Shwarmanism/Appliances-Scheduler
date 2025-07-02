@@ -1,5 +1,6 @@
 from app import db
 from flask_login import UserMixin
+from datetime import datetime
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -51,3 +52,20 @@ class OptimizedAppliances(db.Model):
     combination_id = db.Column(db.Integer, primary_key=True, nullable=False)
     appliances_id = db.Column(db.String(25), db.ForeignKey('appliances.appliances_id'), nullable=False)
     date_created = db.Column(db.Date, nullable=False)
+
+class ScheduledApplianceUsage(db.Model):
+    __tablename__ = 'scheduled_appliances'
+
+    scheduled_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    appliance_id = db.Column(db.String(25), db.ForeignKey('appliances.appliances_id'), nullable=False)
+
+    start_hour = db.Column(db.Integer, nullable=False)       # 0–23
+    duration = db.Column(db.Integer, nullable=False)         # in hours
+    cost = db.Column(db.Float, nullable=False)               # ₱ value
+    energy_kwh = db.Column(db.Float, nullable=False)         # kWh
+    is_partial = db.Column(db.Boolean, default=False)        # if only partially scheduled
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Optional: store raw list of hours as comma-separated string (e.g. "5,6,7,...")
+    hours_used = db.Column(db.String(255))
