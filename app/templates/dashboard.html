@@ -33,7 +33,7 @@
                     <span class="icon"><img src="{{ url_for('static', filename='Appliances.svg') }}" alt="Appliances" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Appliances</span>
                 </a>
-                <a href="/optimize" class="nav-link">
+                <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
                     <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Optimization" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Optimization</span>
                 </a>
@@ -68,7 +68,7 @@
                     <div class="summary-card-bar"></div>
                     <div class="summary-content">
                         <div class="summary-title">Estimated Cost (Avg/Month)</div>
-                        <div class="summary-value">PHP {{ estimated_cost }}</div>
+                        <div class="summary-value">₱ {{ estimated_cost }}</div>
                     </div>
                 </div>
             </section>
@@ -85,9 +85,16 @@
                 <div class="top-appliances glass">
                     <div class="card-bar"></div>
                     <h2>Top 3 Most Energy-Consuming Appliances</h2>
-                    <ol>
+                    <ol class="top-appliances-list">
                         {% for appliance in top_appliances %}
-                            <li>{{ appliance.category }} - {{ appliance.monthly_energy }} kWh</li>
+                            {% set bar_class = 'bar-red' if loop.index == 1 else 'bar-yellow' if loop.index == 2 else 'bar-green' %}
+                            <li class="appliance-item">
+                                <span class="appliance-rank">{{ loop.index }}.</span>
+                                <span class="appliance-name">{{ appliance.category }}</span> - {{ appliance.monthly_energy }} kWh
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill {{ bar_class }}" style="width: {{ appliance.bar_width }}%"></div>
+                                </div>
+                            </li>
                         {% endfor %}
                     </ol>
                 </div>

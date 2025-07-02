@@ -35,7 +35,7 @@
                     <span class="icon"><img src="../static/Appliances.svg" alt="Appliances" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Appliances</span>
                 </a>
-                <a href="/optimization" class="nav-link">
+                <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
                     <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Optimization</span>
                 </a>
@@ -93,7 +93,7 @@
                         <div class="form-group" style="margin-top:18px;">
                             <label for="preferred-range" style="font-weight:600; font-size:1.1rem;">Preferred Scheduling Range:</label>
                             <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
-                                <select id="range-start" name="range-start" style="flex:1; font-size:1.05rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222;">
+                                <select id="range-start" name="time_start" style="flex:1; font-size:1.05rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222;">
                                     <option value="0">12 AM</option>
                                     <option value="1">1 AM</option>
                                     <option value="2">2 AM</option>
@@ -120,7 +120,7 @@
                                     <option value="23">11 PM</option>
                                 </select>
                                 <span style="font-weight:600; color:#888;">to</span>
-                                <select id="range-end" name="range-end" style="flex:1; font-size:1.05rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222;">
+                                <select id="range-end" name="time_end" style="flex:1; font-size:1.05rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222;">
                                     <option value="0">12 AM</option>
                                     <option value="1">1 AM</option>
                                     <option value="2">2 AM</option>
@@ -157,9 +157,10 @@
                 <div id="scheduleLoading" style="display:none; justify-content:center; align-items:center; min-height:120px;">
                     <div class="loader" style="margin:auto; width:48px; height:48px; border:6px solid #ffd600; border-top:6px solid #f25622; border-radius:50%; animation:spin 1s linear infinite;"></div>
                 </div>
-                <div id="scheduleEmpty" class="schedule-empty-state" style="display:block; text-align:center; color:#aaa; font-size:1.1rem; min-height:80px;">
+                <div id="scheduleEmpty" class="schedule-empty-state" style="display:{{ 'none' if schedule else 'block' }}; text-align:center; color:#aaa; font-size:1.1rem; min-height:80px;">
                     No schedule yet. Click <b style="color:#888; font-weight:800;">Generate Schedule</b> to create your best appliance schedule!
                 </div>
+                <div id="scheduleResultContent" style="display:{{ 'block' if schedule else 'none' }};">
                 <div id="scheduleResultContent" style="display:none;">
                     <div class="schedule-summary-bar">
                         <div class="summary-item"><span class="summary-label">Total Cost:</span> <span class="summary-value">₱ 42.50</span></div>
