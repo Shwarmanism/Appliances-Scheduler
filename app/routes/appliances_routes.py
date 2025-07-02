@@ -148,9 +148,9 @@ def energy_consumption(watt, hours, days, weeks):
     return float(hourly_energy), float(daily_energy), float(weekly_energy), float(monthly_energy)
 
 def severity_checker(daily):
-    if daily >= 1.5:
+    if daily > 5:
         return "Severe"
-    elif 0.5 <= daily < 1.5:
+    elif 2 <= daily <= 5:
         return "Moderate"
     else:
         return "Low"

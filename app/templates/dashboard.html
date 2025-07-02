@@ -33,7 +33,7 @@
                     <span class="icon"><img src="{{ url_for('static', filename='Appliances.svg') }}" alt="Appliances" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Appliances</span>
                 </a>
-                <a href="/optimize" class="nav-link">
+                <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
                     <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Optimization" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Optimization</span>
                 </a>
@@ -87,7 +87,7 @@
                     <h2>Top 3 Most Energy-Consuming Appliances</h2>
                     <ol>
                         {% for appliance in top_appliances %}
-                            <li>{{ appliance.category }} - {{ appliance.monthly_energy }} kWh</li>
+                            <li>{{ appliance.model }} - {{ appliance.monthly_energy }} kWh</li>
                         {% endfor %}
                     </ol>
                 </div>

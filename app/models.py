@@ -43,3 +43,11 @@ class Appliances(db.Model):
     monthly_energy = db.Column(db.Float, nullable=False)
 
     status = db.Column(db.String(3), default='off', nullable=False)
+
+class OptimizedAppliances(db.Model):
+    __tablename__=('optimized_appliances')
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    combination_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    appliances_id = db.Column(db.String(25), db.ForeignKey('appliances.appliances_id'), nullable=False)
+    date_created = db.Column(db.Date, nullable=False)
