@@ -10,17 +10,19 @@ home = Blueprint('home', __name__)
 def home_dashboard():
     user_appliances = Appliances.query.filter_by(user_id=current_user.user_id).all()
 
-    total_kwh = sum(a.monthly_energy or 0 for a in user_appliances)
-    estimated_cost = round(total_kwh * 12.5, 2)  # Assume lang ang vlaue
-    average_usage = round(total_kwh / len(user_appliances), 2) if user_appliances else 0
+    on_appliances = [a for a in user_appliances if a.status == 'on']
+    total_kwh = sum(a.monthly_energy or 0 for a in on_appliances)
+    estimated_cost = round(total_kwh * 11, 2)  # random value muna
+    average_usage = round(total_kwh / len(on_appliances), 2) if on_appliances else 0
 
-    top_appliances = sorted(user_appliances, key=lambda x: x.monthly_energy or 0, reverse=True)[:3]
+    top_appliances = sorted(on_appliances, key=lambda x: x.monthly_energy or 0, reverse=True)[:3]
 
-    yesterday_usage = sum(a.daily_energy or 0 for a in user_appliances)
+    yesterday_usage = sum(a.daily_energy or 0 for a in on_appliances)
+
     notification = None
-    if yesterday_usage > 5:
+    if yesterday_usage > 35:
         notification = f"You exceeded your 5 kWh limit yesterday! ({round(yesterday_usage, 2)} kWh)"
-
+        
     tips = [
         "Turn off appliances when not in use.",
         "Use LED lights to save energy.",
@@ -38,3 +40,7 @@ def home_dashboard():
                            random_tip=random_tip,
                            notification=notification) 
 
+
+# def total_monthly_cost():
+    
+# def peak_checker():

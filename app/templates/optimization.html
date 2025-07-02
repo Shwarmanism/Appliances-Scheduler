@@ -59,7 +59,7 @@
                 <b>Find the best way to use your appliances while saving energy!</b><br>
                 Set your daily energy usage limit below. We'll suggest the smartest mix of appliances to help you stay within your goal, while still enjoying comfort and convenience.
             </div>
-            <div class="optimization-cards-row">
+           <div class="optimization-cards-row">
                 <div class="glass optimization-cap-card">
                     <form>
                         <label for="energy-cap" style="font-weight:600; font-size:1.1rem;">Energy Usage Cap:</label>
@@ -77,7 +77,6 @@
                     </div>
                 </div>
             </div>
-            <div id="optNotif" style="display:none; margin:0 auto 18px auto; max-width:480px; text-align:center; z-index:10;"></div>
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
                                 <form action="/optimize" method="POST">
                     <input type="hidden" name="energy-cap" id="form-energy-cap" value="">
@@ -131,6 +130,12 @@
                     {% else %}
                     <span style="color:#f44336; font-weight:800;">Exceeded your set limit!</span>
                     {% endif %}
+                    <span style="color:#f25622; font-weight:800;">Total Energy Used:</span> {{ total_energy }} kWh
+                    {% if total_energy <= energy_cap %}
+                    <span style="color:#00d26a; font-weight:800;">Within your set limit!</span>
+                    {% else %}
+                    <span style="color:#f44336; font-weight:800;">Exceeded your set limit!</span>
+                    {% endif %}
                 </div>
             </div>
             <div id="saveNotif" style="display:none; margin:24px auto 0 auto; max-width:480px; text-align:center; z-index:10;"><span class="notif-icon">✔</span><span id="saveNotifMsg">Successfully saved!</span></div>
@@ -153,8 +158,10 @@
                 notif.className = '';
                 notif.style.display = 'none';
             }
-            setCapBtn.onclick = function() {
-                if (capInput.value && capInput.value.trim() !== "" && parseFloat(capInput.value) > 0) {
+
+            setCapBtn.onclick = () => {
+                const val = parseFloat(capInput.value);
+                if (!isNaN(val) && val > 0) {
                     optimizeBtn.disabled = false;
                     optimizeBtn.style.opacity = "1";
                     optimizeBtn.style.cursor = "pointer";

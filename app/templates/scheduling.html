@@ -36,6 +36,7 @@
                     <span class="nav-text">Appliances</span>
                 </a>
                 <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
+                <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
                     <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Optimization</span>
                 </a>
@@ -93,6 +94,7 @@
                         <div class="form-group" style="margin-top:18px;">
                             <label for="preferred-range" style="font-weight:600; font-size:1.1rem;">Preferred Scheduling Range:</label>
                             <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
+                                <select id="range-start" name="time_start" style="flex:1; font-size:1.05rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222;">
                                 <select id="range-start" name="time_start" style="flex:1; font-size:1.05rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222;">
                                     <option value="0">12 AM</option>
                                     <option value="1">1 AM</option>
@@ -157,41 +159,44 @@
                 <div id="scheduleLoading" style="display:none; justify-content:center; align-items:center; min-height:120px;">
                     <div class="loader" style="margin:auto; width:48px; height:48px; border:6px solid #ffd600; border-top:6px solid #f25622; border-radius:50%; animation:spin 1s linear infinite;"></div>
                 </div>
-                <div id="scheduleEmpty" class="schedule-empty-state" style="display:{{ 'none' if schedule else 'block' }}; text-align:center; color:#aaa; font-size:1.1rem; min-height:80px;">
+               <div id="scheduleEmpty" class="schedule-empty-state" style="display:{{ 'none' if schedule else '{{ 'none' if schedule else 'block' }}' }}; text-align:center; color:#aaa; font-size:1.1rem; min-height:80px;">
                     No schedule yet. Click <b style="color:#888; font-weight:800;">Generate Schedule</b> to create your best appliance schedule!
                 </div>
                 <div id="scheduleResultContent" style="display:{{ 'block' if schedule else 'none' }};">
                 <div id="scheduleResultContent" style="display:none;">
+                <div id="scheduleResultContent" style="display:{{ 'block' if schedule else 'none' }};">
                     <div class="schedule-summary-bar">
-                        <div class="summary-item"><span class="summary-label">Total Cost:</span> <span class="summary-value">₱ 42.50</span></div>
-                        <div class="summary-item"><span class="summary-label">Total Energy:</span> <span class="summary-value">5.2 kWh</span></div>
+                        <div class="summary-item"><span class="summary-label">Total Cost:</span>
+                            <span class="summary-value">₱ {{ '%.2f' | format(total_cost) }}</span>
+                        </div>
+                        <div class="summary-item"><span class="summary-label">Total Energy:</span>
+                            <span class="summary-value">{{ total_energy }} kWh</span>
+                        </div>
                     </div>
                     <div class="schedule-cards-row">
-                        <div class="schedule-appliance-card">
-                            <div class="appliance-title">Refrigerator</div>
-                            <div class="appliance-time">12:00 AM – 6:00 AM</div>
-                            <div class="appliance-cost">₱ 12.00</div>
-                        </div>
-                        <div class="schedule-appliance-card">
-                            <div class="appliance-title">Electric Fan</div>
-                            <div class="appliance-time">9:00 PM – 5:00 AM</div>
-                            <div class="appliance-cost">₱ 8.50</div>
-                        </div>
-                        <div class="schedule-appliance-card">
-                            <div class="appliance-title">Rice Cooker</div>
-                            <div class="appliance-time">6:00 AM – 7:00 AM</div>
-                            <div class="appliance-cost">₱ 6.00</div>
-                        </div>
-                        <div class="schedule-appliance-card">
-                            <div class="appliance-title">Laptop</div>
-                            <div class="appliance-time">8:00 PM – 10:00 PM</div>
-                            <div class="appliance-cost">₱ 4.00</div>
-                        </div>
-                        <div class="schedule-appliance-card">
-                            <div class="appliance-title">Aircon</div>
-                            <div class="appliance-time">10:00 PM – 2:00 AM</div>
-                            <div class="appliance-cost">₱ 12.00</div>
-                        </div>
+                        {% for model, data in schedule.items() %}
+                            {% if data %}
+                                <div class="schedule-appliance-card">
+                                    <div class="appliance-title">{{ model }}</div>
+                                    <div class="appliance-time">
+                                    {{ data.start_hour|format_hour }} – {{ (data.start_hour + data.duration)|format_hour }}
+                                    {% if data.is_partial %}
+                                        <span style="color:#e67e22; font-weight:bold;">(Partially scheduled)</span>
+                                    {% endif %}
+                                    </div>
+                                    <div class="appliance-cost">₱ {{ data.cost }}</div>
+                                </div>
+                                {% else %}
+                                <div class="schedule-appliance-card">
+                                    <div class="appliance-title">{{ model }}</div>
+                                    <div class="appliance-time" style="color:#e74c3c;">Invalid schedule</div>
+                                    <div class="appliance-cost">₱ 0</div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="schedule-graph-placeholder">
+                        <div class="graph-placeholder-text">Graph Placeholder<br><span style="font-size:0.98rem; color:#888;">(schedule visualization)</span></div>
                     </div>
                     <div class="schedule-graph-placeholder">
                         <div class="graph-placeholder-text">Graph Placeholder<br><span style="font-size:0.98rem; color:#888;">(schedule visualization)</span></div>
@@ -264,9 +269,9 @@
     const selectBtn = document.getElementById('selectScheduleBtn');
     const selectedTypeSpan = document.getElementById('selectedScheduleType');
     const selectedApplianceList = document.getElementById('selectedApplianceList');
-
-    const optimizedAppliances = ['Refrigerator', 'Electric Fan', 'Rice Cooker', 'Laptop'];
-    const customAppliances = ['Refrigerator', 'Electric Fan', 'Rice Cooker', 'Laptop']; // Replace with dynamic if needed
+    
+    const applianceMap = {{ model_map | tojson }};
+    const optimizedAppliances = {{ optimized_appliances | tojson }};
 
     function updateSelectBtn() {
         selectedApplianceList.innerHTML = '';
@@ -304,33 +309,85 @@
         document.getElementById('scheduleTypePopup').style.display = 'flex';
     };
     document.getElementById('chooseOptimizedBtn').onclick = function() {
-        document.getElementById('scheduleTypePopup').style.display = 'none';
-        document.getElementById('optimizedPopup').style.display = 'flex';
-        selectedType = 'optimized';
-        updateSelectBtn();
+    document.getElementById('scheduleTypePopup').style.display = 'none';
+    document.getElementById('optimizedPopup').style.display = 'flex';
     };
+
+    {% if selected_type == 'optimized' %}
+        window.addEventListener('load', function () {
+            document.getElementById('optimizedPopup').style.display = 'flex';
+        });
+    {% endif %}
+    
     document.getElementById('chooseCustomBtn').onclick = function() {
-        document.getElementById('scheduleTypePopup').style.display = 'none';
-        document.getElementById('customPopup').style.display = 'flex';
-        selectedType = 'custom';
-        updateSelectBtn();
+    document.getElementById('scheduleTypePopup').style.display = 'none';
+    document.getElementById('customPopup').style.display = 'flex';
     };
-    document.getElementById('generateScheduleBtn').onclick = function() {
-        document.getElementById('scheduleResultSection').style.display = 'block';
-        document.getElementById('scheduleEmpty').style.display = 'none';
-        document.getElementById('scheduleResultContent').style.display = 'none';
-        document.getElementById('scheduleLoading').style.display = 'flex';
-        setTimeout(function() {
-            document.getElementById('scheduleLoading').style.display = 'none';
-            document.getElementById('scheduleResultContent').style.display = 'block';
-        }, 1500);
+
+    document.getElementById('generateScheduleBtn').onclick = function () {
+        console.log("✅ [DEBUG] Generate Schedule button clicked");
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/scheduling';
+
+        const typeInput = document.createElement('input');
+        typeInput.type = 'hidden';
+        typeInput.name = 'selected_type';
+        typeInput.value = selectedType;
+        form.appendChild(typeInput);
+
+        const timeStart = document.getElementById('range-start').value;
+        const timeEnd = document.getElementById('range-end').value;
+
+        const timeStartInput = document.createElement('input');
+        timeStartInput.type = 'hidden';
+        timeStartInput.name = 'time_start';
+        timeStartInput.value = timeStart;
+        form.appendChild(timeStartInput);
+
+        const timeEndInput = document.createElement('input');
+        timeEndInput.type = 'hidden';
+        timeEndInput.name = 'time_end';
+        timeEndInput.value = timeEnd;
+        form.appendChild(timeEndInput);
+
+        let selected = [];
+        if (selectedType === 'custom') {
+            selected = getCheckedCustomAppliances();
+        } else if (selectedType === 'optimized') {
+            selected = optimizedAppliances;
+        }
+
+        if (selected.length === 0) {
+            alert("⚠️ No appliances selected! Please select at least one appliance.");
+            return;
+        }
+
+        selected.forEach(applianceId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_appliances';
+            input.value = applianceId;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+
+        console.log("📤 Submitting form with the following fields:");
+        Array.from(form.elements).forEach(el => {
+            console.log(`  → ${el.name}: ${el.value}`);
+        });
+
+        form.submit();
     };
+    
     const customForm = document.getElementById('customApplianceForm');
     document.getElementById('confirmCustomBtn').onclick = function(e) {
         e.preventDefault();
+        selectedType = 'custom';                 
+        updateSelectBtn();                         
         document.getElementById('customPopup').style.display = 'none';
-        selectedType = 'custom';
-        updateSelectBtn();
     };
     function getCheckedCustomAppliances() {
         return Array.from(customForm.elements['custom-appliance'])
