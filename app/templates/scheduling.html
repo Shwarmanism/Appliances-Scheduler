@@ -74,12 +74,12 @@
                             <tr>
                                 <td>8 AM – 9 PM</td>
                                 <td>Peak</td>
-                                <td>₱7.48</td>
+                                <td>₱ 7.48</td>
                             </tr>
                             <tr>
                                 <td>9 PM – 8 AM</td>
                                 <td>Off-Peak</td>
-                                <td>₱3.55</td>
+                                <td>₱ 3.55</td>
                             </tr>
                         </tbody>
                     </table>
@@ -89,7 +89,7 @@
                         <label style="font-weight:600; font-size:1.1rem;">What to Smart Schedule:</label>
                         <button type="button" class="add-appliance-btn" id="selectScheduleBtn" style="margin-top:12px; width:100%;">Select</button>
                         <span id="selectedScheduleType" style="display:none; margin-top:8px; font-weight:700; color:#f25622;"></span>
-                        <ul id="selectedApplianceList" style="display:none; margin:10px 0 0 0; padding-left:20px; color:#444; font-weight:600; list-style:disc inside;"></ul>
+                        <ul id="selectedApplianceList" class="selected-appliance-grid" style="display:none;"></ul>
                         <div class="form-group" style="margin-top:18px;">
                             <label for="preferred-range" style="font-weight:600; font-size:1.1rem;">Preferred Scheduling Range:</label>
                             <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
@@ -192,6 +192,9 @@
                             <div class="appliance-cost">₱ 12.00</div>
                         </div>
                     </div>
+                    <div class="schedule-graph-placeholder">
+                        <div class="graph-placeholder-text">Graph Placeholder<br><span style="font-size:0.98rem; color:#888;">(schedule visualization)</span></div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -209,34 +212,48 @@
     </div>
     <!-- Optimized List Popup -->
     <div id="optimizedPopup" class="modal-overlay" style="display:none;">
-        <div class="modal-content glass" style="max-width:400px;align-items:center;">
+        <div class="modal-content glass" style="max-width:440px;align-items:center;">
             <button class="modal-close-btn" onclick="document.getElementById('optimizedPopup').style.display='none'">&times;</button>
             <h2>Optimized Appliances</h2>
-            <div style="margin-bottom:18px;">These appliances will be scheduled:</div>
-            <ul style="text-align:left; margin-bottom:18px;">
-                <li>Refrigerator</li>
-                <li>Electric Fan</li>
-                <li>Rice Cooker</li>
-                <li>Laptop</li>
-            </ul>
+            <div style="margin-bottom:18px; color:#666; font-size:1.05rem;">These appliances will be scheduled for best efficiency:</div>
+            <div class="optimized-appliance-grid">
+                <div class="optimized-appliance-card">
+                    <span class="appliance-dot" style="background:#227be6;"></span> Refrigerator
+                </div>
+                <div class="optimized-appliance-card">
+                    <span class="appliance-dot" style="background:#227be6;"></span> Electric Fan
+                </div>
+                <div class="optimized-appliance-card">
+                    <span class="appliance-dot" style="background:#227be6;"></span> Rice Cooker
+                </div>
+                <div class="optimized-appliance-card">
+                    <span class="appliance-dot" style="background:#227be6;"></span> Laptop
+                </div>
+            </div>
             <button class="submit-btn" onclick="document.getElementById('optimizedPopup').style.display='none'">Confirm</button>
         </div>
     </div>
     <!-- Custom List Popup -->
     <div id="customPopup" class="modal-overlay" style="display:none;">
-        <div class="modal-content glass" style="max-width:400px;align-items:center;">
+        <div class="modal-content glass" style="max-width:440px;align-items:center;">
             <button class="modal-close-btn" onclick="document.getElementById('customPopup').style.display='none'">&times;</button>
             <h2>Select Appliances to Schedule</h2>
-            <div style="margin-bottom:18px;">Choose from your toggled appliances:</div>
-            <form id="customApplianceForm">
-                <label><input type="checkbox" name="custom-appliance" value="Refrigerator" checked> Refrigerator</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="Electric Fan"> Electric Fan</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="Rice Cooker"> Rice Cooker</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="Laptop"> Laptop</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="Aircon"> Aircon</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="Washing Machine"> Washing Machine</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="TV"> TV</label><br>
-                <label><input type="checkbox" name="custom-appliance" value="Microwave"> Microwave</label><br>
+            <div style="margin-bottom:18px; color:#666; font-size:1.05rem;">Choose from your toggled appliances:</div>
+            <form id="customApplianceForm" style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-weight:700; color:#227be6; font-size:1.08rem;">Appliance List</span>
+                    <button type="button" id="selectAllCustom" class="custom-btn" style="padding:4px 16px; font-size:0.98rem; font-weight:700; border-radius:6px;">Select All</button>
+                </div>
+                <div class="custom-appliance-grid">
+                    <label><input type="checkbox" name="custom-appliance" value="Refrigerator" checked> Refrigerator</label>
+                    <label><input type="checkbox" name="custom-appliance" value="Electric Fan"> Electric Fan</label>
+                    <label><input type="checkbox" name="custom-appliance" value="Rice Cooker"> Rice Cooker</label>
+                    <label><input type="checkbox" name="custom-appliance" value="Laptop"> Laptop</label>
+                    <label><input type="checkbox" name="custom-appliance" value="Aircon"> Aircon</label>
+                    <label><input type="checkbox" name="custom-appliance" value="Washing Machine"> Washing Machine</label>
+                    <label><input type="checkbox" name="custom-appliance" value="TV"> TV</label>
+                    <label><input type="checkbox" name="custom-appliance" value="Microwave"> Microwave</label>
+                </div>
             </form>
             <button class="submit-btn" id="confirmCustomBtn">Confirm</button>
         </div>
@@ -256,48 +273,25 @@
             selectBtn.textContent = 'Optimized Selected';
             selectBtn.className = 'optimized-btn';
             selectedTypeSpan.style.display = 'none';
-            selectedApplianceList.style.display = 'block';
+            selectedApplianceList.style.display = 'grid';
             optimizedAppliances.forEach(item => {
                 const li = document.createElement('li');
-                li.textContent = item;
+                li.className = 'selected-appliance-card';
+                li.innerHTML = '<span class="appliance-dot" style="background:#227be6;"></span>' + item;
                 selectedApplianceList.appendChild(li);
             });
         } else if (selectedType === 'custom') {
             selectBtn.textContent = 'Custom Selected';
             selectBtn.className = 'custom-btn';
             selectedTypeSpan.style.display = 'none';
-            selectedApplianceList.style.display = 'block';
+            selectedApplianceList.style.display = 'grid';
             const checked = getCheckedCustomAppliances();
-            if (checked.length <= 4) {
-                checked.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    selectedApplianceList.appendChild(li);
-                });
-            } else {
-                // Two columns
-                const col1 = document.createElement('ul');
-                const col2 = document.createElement('ul');
-                col1.style.listStyle = col2.style.listStyle = 'disc inside';
-                col1.style.margin = col2.style.margin = '0';
-                col1.style.padding = col2.style.padding = '0 20px 0 0';
-                col1.style.flex = col2.style.flex = '1';
-                checked.slice(0, 4).forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    col1.appendChild(li);
-                });
-                checked.slice(4).forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    col2.appendChild(li);
-                });
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.appendChild(col1);
-                row.appendChild(col2);
-                selectedApplianceList.appendChild(row);
-            }
+            checked.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'selected-appliance-card';
+                li.innerHTML = '<span class="appliance-dot" style="background:#227be6;"></span>' + item;
+                selectedApplianceList.appendChild(li);
+            });
         } else {
             selectBtn.textContent = 'Select';
             selectBtn.className = 'add-appliance-btn';
@@ -342,6 +336,13 @@
             .filter(cb => cb.checked)
             .map(cb => cb.value);
     }
+    document.getElementById('selectAllCustom').onclick = function(e) {
+        e.preventDefault();
+        const checkboxes = document.querySelectorAll('#customApplianceForm input[type="checkbox"][name="custom-appliance"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        this.textContent = allChecked ? 'Select All' : 'Unselect All';
+    };
     updateSelectBtn();
     </script>
     <style>

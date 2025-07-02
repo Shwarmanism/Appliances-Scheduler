@@ -57,7 +57,7 @@
             <div class="appliances-title">Optimization</div>
             <div class="optimization-desc">
                 <b>Find the best way to use your appliances while saving energy!</b><br>
-                Set your daily energy usage limit below. We'll suggest the smartest mix of appliances to help you stay within your goal, while still enjoying comfort and convenience. The higher the importance, the more likely an appliance is included in your plan.
+                Set your daily energy usage limit below. We'll suggest the smartest mix of appliances to help you stay within your goal, while still enjoying comfort and convenience.
             </div>
             <div class="optimization-cards-row">
                 <div class="glass optimization-cap-card">
@@ -78,9 +78,12 @@
             </div>
             <div id="optNotif" style="display:none; margin:0 auto 18px auto; max-width:480px; text-align:center; z-index:10;"></div>
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
-                <button id="optimizeBtn" class="add-appliance-btn" style="font-size:1.1rem; padding:10px 32px; border-radius:10px; border:2px solid #ccc; color:#aaa; background:#f3f3f3; font-weight:700; cursor:not-allowed; transition:background 0.2s, color 0.2s, border 0.2s, opacity 0.2s; opacity:0.7;" disabled>Optimize</button>
+                <button id="optimizeBtn" class="add-appliance-btn" disabled>Optimize</button>
             </div>
             <div id="optimizationCardsSection" class="glass optimization-cards-section">
+                <div id="savePlanBtnRow" style="display:none; justify-content:flex-end; align-items:center; margin-bottom:8px;">
+                    <button id="savePlanBtn" class="add-appliance-btn" type="button">Save</button>
+                </div>
                 <div style="font-weight:800; font-size:1.35rem; margin-bottom:28px; color:#f25622; text-align:center; letter-spacing:1px;">Your Optimized Appliance Plan</div>
                 <div id="optimizationLoading" style="display:none; justify-content:center; align-items:center; min-height:120px;">
                     <div class="loader" style="margin:auto; width:48px; height:48px; border:6px solid #ffd600; border-top:6px solid #f25622; border-radius:50%; animation:spin 1s linear infinite;"></div>
@@ -117,6 +120,7 @@
                     <span style="color:#f25622; font-weight:800;">Total Energy Used:</span> 2.5 kWh &nbsp; | &nbsp; <span style="color:#00d26a; font-weight:800;">Within your set limit!</span>
                 </div>
             </div>
+            <div id="saveNotif" style="display:none; margin:24px auto 0 auto; max-width:480px; text-align:center; z-index:10;"><span class="notif-icon">✔</span><span id="saveNotifMsg">Successfully saved!</span></div>
             <style>
             @keyframes spin { 100% { transform: rotate(360deg); } }
             </style>
@@ -129,10 +133,10 @@
                 notif.textContent = msg;
                 notif.style.display = 'block';
                 notif.className = 'opt-toast-show';
-                setTimeout(function() {
-                    notif.className = notif.className.replace('opt-toast-show', '');
-                    notif.style.display = 'none';
-                }, 2000);
+            }
+            function hideOptNotif() {
+                notif.className = '';
+                notif.style.display = 'none';
             }
             setCapBtn.onclick = function() {
                 if (capInput.value && capInput.value.trim() !== "" && parseFloat(capInput.value) > 0) {
@@ -142,6 +146,7 @@
                     optimizeBtn.style.background = "#fff";
                     optimizeBtn.style.color = "#f25622";
                     optimizeBtn.style.border = "2px solid #f25622";
+                    hideOptNotif();
                 } else {
                     optimizeBtn.disabled = true;
                     optimizeBtn.style.opacity = "0.7";
@@ -165,11 +170,13 @@
                 empty.style.display = 'none';
                 seq.style.display = 'none';
                 summary.style.display = 'none';
+                saveBtnRow.style.display = 'none';
                 this.disabled = true;
                 setTimeout(function() {
                     loading.style.display = 'none';
                     seq.style.display = 'flex';
                     summary.style.display = 'block';
+                    saveBtnRow.style.display = 'flex';
                 }, 1500);
             };
             // Initial state
@@ -179,6 +186,21 @@
             optimizeBtn.style.background = "#f3f3f3";
             optimizeBtn.style.color = "#aaa";
             optimizeBtn.style.border = "2px solid #ccc";
+            var saveBtnRow = document.getElementById('savePlanBtnRow');
+            var saveNotif = document.getElementById('saveNotif');
+            function showSaveNotif(msg) {
+                document.getElementById('saveNotifMsg').textContent = msg;
+                saveNotif.style.display = 'block';
+                saveNotif.className = 'save-toast-show';
+                saveNotif.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(function() {
+                    saveNotif.className = saveNotif.className.replace('save-toast-show', '');
+                    saveNotif.style.display = 'none';
+                }, 2000);
+            }
+            saveBtnRow.onclick = function() {
+                showSaveNotif('Successfully saved!');
+            };
             </script>
         </main>
     </div>

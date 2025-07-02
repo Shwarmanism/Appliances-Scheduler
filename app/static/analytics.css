@@ -59,6 +59,12 @@
     flex-direction: column;
     align-items: flex-start;
 }
+.analytics-charts .analytics-chart:nth-child(2) {
+    min-width: 480px;
+    max-width: 700px;
+    width: 100%;
+    flex: 2 1 480px;
+}
 .chart-title {
     font-size: 1.15rem;
     font-weight: 700;
@@ -280,6 +286,43 @@
     text-align: center;
 }
 
+.chart-filters {
+    background: #fffbe6;
+    border: 1.5px solid #ffe082;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(255,223,0,0.07);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+.chart-filters label {
+    font-weight: 700;
+    color: #f25622;
+    font-size: 1.05rem;
+    margin-right: 4px;
+}
+.chart-filters select {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1.5px solid #ffd600;
+    font-size: 1.05rem;
+    font-weight: 600;
+    background: #fff;
+    color: #222;
+    transition: border 0.2s, box-shadow 0.2s;
+    outline: none;
+    box-shadow: 0 1px 4px rgba(255,223,0,0.08);
+}
+.chart-filters select:focus {
+    border: 1.5px solid #f25622;
+    box-shadow: 0 0 0 2px #ffdf00;
+}
+
 @media (max-width: 1100px) {
     .analytics-cards, .analytics-charts, .analytics-highlights {
         flex-direction: column;
@@ -288,6 +331,12 @@
     .analytics-card, .analytics-chart, .highlight-card, .savings-card {
         min-width: unset;
         width: 100%;
+    }
+    .analytics-charts .analytics-chart:nth-child(2) {
+        min-width: unset;
+        max-width: 100%;
+        width: 100%;
+        flex: 1 1 0;
     }
 }
 @media (max-width: 900px) {
@@ -298,4 +347,25 @@
         flex-direction: column;
         gap: 12px;
     }
+}
+
+#pieChart {
+    width: 100% !important;
+    max-width: 550px;
+    height: auto !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.device-duration {
+    font-size: 0.98em;
+    color: #888;
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.peso-green {
+    color: #1db954;
+    font-weight: 800;
 } 

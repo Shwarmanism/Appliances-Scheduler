@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../static/dashboard.css">
     <link rel="stylesheet" href="../static/analytics.css">
     <link rel="stylesheet" href="../static/appliances.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <input type="checkbox" id="sidebar-toggle" hidden>
@@ -78,7 +79,7 @@
                     <div class="analytics-card-bar"></div>
                     <div class="analytics-content">
                         <div class="analytics-title">Total Estimated Monthly Cost</div>
-                        <div class="analytics-value">PHP 1,200</div>
+                        <div class="analytics-value peso-green">₱ 1,200</div>
                     </div>
                 </div>
             </section>
@@ -86,16 +87,26 @@
             <section class="analytics-charts">
                 <div class="analytics-chart glass">
                     <div class="chart-title">Appliance Usage Breakdown</div>
-                    <div class="chart-placeholder" id="pie-chart">
-                        <!-- Pie chart will be rendered here -->
-                        <span class="chart-placeholder-title">Pie Chart Placeholder</span>
-                    </div>
+                    <canvas id="pieChart"></canvas>
                 </div>
                 <div class="analytics-chart glass">
                     <div class="chart-title">Time-based Usage</div>
-                    <div class="chart-placeholder" id="line-chart">
-                        <!-- Line/Bar chart will be rendered here -->
-                        <span class="chart-placeholder-title">Line/Bar Chart Placeholder</span>
+                    <canvas id="lineChart" width="350" height="220"></canvas>
+                    <div class="chart-filters" style="display:flex; gap:16px; align-items:center; margin-bottom:10px;">
+                        <label for="applianceFilter" style="font-weight:600; color:#444;">Appliance:</label>
+                        <select id="applianceFilter" style="padding:6px 12px; border-radius:8px; border:1.5px solid #e0e0e0; font-size:1rem;">
+                            <option value="all">All</option>
+                            <option value="aircon">Air Conditioner</option>
+                            <option value="waterheater">Water Heater</option>
+                            <option value="refrigerator">Refrigerator</option>
+                            <option value="laptop">Laptop</option>
+                            <option value="fan">Fan</option>
+                        </select>
+                        <label for="viewTypeFilter" style="font-weight:600; color:#444;">View:</label>
+                        <select id="viewTypeFilter" style="padding:6px 12px; border-radius:8px; border:1.5px solid #e0e0e0; font-size:1rem;">
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
                     </div>
                 </div>
             </section>
@@ -118,21 +129,273 @@
                             <div class="trend-icon">⚡</div>
                             <div class="trend-label">Overused Appliances</div>
                             <ul class="overused-list">
-                                <li>Air Conditioner</li>
-                                <li>Water Heater</li>
+                                <li>Air Conditioner <span class="device-duration">- 8h</span></li>
+                                <li>Water Heater <span class="device-duration">- 3h</span></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="savings-card glass">
-                    <div class="savings-title">Savings</div>
-                    <div class="savings-total-green">Total saved this month: PHP 45</div>
-                    <div class="chart-placeholder" id="savings-graph">
-                        <span class="chart-placeholder-title">Savings Line Graph </span>
-                    </div>
+                    <div class="savings-title">Savings Chart</div>
+                    <div class="savings-total-green">Total saved this month: ₱ 45</div>
+                    <canvas id="savingsChart" width="600" height="220" style="margin-bottom:10px;"></canvas>
                 </div>
             </section>
         </main>
     </div>
+    <script>
+    // Appliance Usage Breakdown (Pie Chart)
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Air Conditioner', 'Water Heater', 'Refrigerator', 'Laptop', 'Fan'],
+            datasets: [{
+                data: [35, 25, 20, 10, 10],
+                backgroundColor: [
+                    'rgba(242,86,34,0.92)',
+                    'rgba(255,223,0,0.92)',
+                    'rgba(0,184,107,0.92)',
+                    'rgba(34,123,230,0.92)',
+                    'rgba(110,110,110,0.92)'
+                ],
+                borderColor: '#fff',
+                borderWidth: 4,
+                hoverOffset: 16,
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 15 } } },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    },
+                    backgroundColor: '#fff',
+                    titleColor: '#f25622',
+                    bodyColor: '#222',
+                    borderColor: '#f25622',
+                    borderWidth: 1.5,
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 1200,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    // Time-based Usage (Line Chart) with filter logic and enhancements
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const applianceData = {
+        all: {
+            daily: [12, 15, 10, 18, 14, 20, 16],
+            monthly: [320, 340, 310, 380, 350, 400, 370, 390, 410, 420, 430, 440],
+        },
+        aircon: {
+            daily: [5, 7, 4, 8, 6, 9, 7],
+            monthly: [120, 130, 110, 140, 135, 150, 145, 148, 152, 160, 165, 170],
+        },
+        waterheater: {
+            daily: [2, 3, 2, 4, 3, 5, 4],
+            monthly: [50, 55, 52, 60, 58, 65, 62, 64, 66, 68, 70, 72],
+        },
+        refrigerator: {
+            daily: [1, 1, 1, 1, 1, 1, 1],
+            monthly: [30, 31, 30, 32, 31, 33, 32, 33, 34, 35, 36, 36],
+        },
+        laptop: {
+            daily: [2, 2, 1, 2, 2, 2, 2],
+            monthly: [40, 42, 41, 43, 42, 44, 43, 44, 45, 46, 47, 48],
+        },
+        fan: {
+            daily: [2, 2, 2, 3, 2, 3, 2],
+            monthly: [40, 45, 42, 50, 48, 55, 52, 54, 56, 58, 60, 62],
+        }
+    };
+    const dailyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let currentAppliance = 'all';
+    let currentView = 'daily';
+    // Gradient for line chart
+    function getLineGradient(ctx, color) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+        gradient.addColorStop(0, 'rgba(242,86,34,0.32)'); // Strong orange at top
+        gradient.addColorStop(0.7, 'rgba(242,86,34,0.12)'); // Lighter orange in the middle
+        gradient.addColorStop(1, 'rgba(242,86,34,0.01)'); // Transparent at bottom
+        return gradient;
+    }
+    let lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: dailyLabels,
+            datasets: [{
+                label: 'kWh Used',
+                data: applianceData['all']['daily'],
+                borderColor: '#f25622',
+                backgroundColor: getLineGradient(lineCtx, 'rgba(242,86,34,1)'),
+                tension: 0.4,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#f25622',
+                pointRadius: 7,
+                pointHoverRadius: 10,
+                pointBorderWidth: 3,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'kWh Used: ' + context.parsed.y;
+                        }
+                    },
+                    backgroundColor: '#fff',
+                    titleColor: '#f25622',
+                    bodyColor: '#222',
+                    borderColor: '#f25622',
+                    borderWidth: 1.5,
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 4,
+                },
+                point: {
+                    borderWidth: 3,
+                    radius: 7,
+                    hoverRadius: 10,
+                    backgroundColor: '#fff',
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart'
+            },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'kWh' }, grid: { color: '#eee' } },
+                x: { title: { display: true, text: currentView === 'daily' ? 'Day' : 'Month' }, grid: { color: '#f7f7f7' } }
+            }
+        }
+    });
+
+    document.getElementById('applianceFilter').addEventListener('change', function() {
+        currentAppliance = this.value;
+        updateLineChart();
+    });
+    document.getElementById('viewTypeFilter').addEventListener('change', function() {
+        currentView = this.value;
+        updateLineChart();
+    });
+
+    function updateLineChart() {
+        const labels = currentView === 'daily' ? dailyLabels : monthlyLabels;
+        lineChart.data.labels = labels;
+        lineChart.data.datasets[0].data = applianceData[currentAppliance][currentView];
+        lineChart.options.scales.x.title.text = currentView === 'daily' ? 'Day' : 'Month';
+        lineChart.data.datasets[0].backgroundColor = getLineGradient(lineCtx, 'rgba(242,86,34,1)');
+        lineChart.update();
+    }
+
+    // Savings (Line Chart with two datasets: Total Savings and Normal)
+    const savingsCtx = document.getElementById('savingsChart').getContext('2d');
+    const savingsTotal = [7, 18, 28, 45]; // Example: total savings with optimization and scheduling
+    const savingsNormal = [2, 6, 10, 15]; // Example: normal savings without optimization/scheduling
+    
+    const greenGradient = savingsCtx.createLinearGradient(0, 0, 0, 220);
+    greenGradient.addColorStop(0, 'rgba(0,184,107,0.18)');
+    greenGradient.addColorStop(1, 'rgba(0,184,107,0.01)');
+    const grayGradient = savingsCtx.createLinearGradient(0, 0, 0, 220);
+    grayGradient.addColorStop(0, 'rgba(110,110,110,0.22)');
+    grayGradient.addColorStop(1, 'rgba(110,110,110,0.01)');
+    new Chart(savingsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [
+                {
+                    label: 'Without Optimization/Scheduling',
+                    data: savingsNormal,
+                    borderColor: '#6e6e6e',
+                    backgroundColor: grayGradient,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#6e6e6e',
+                    pointRadius: 7,
+                    pointHoverRadius: 10,
+                    pointBorderWidth: 3,
+                    fill: true,
+                    borderDash: [6, 4],
+                    order: 2
+                },
+                {
+                    label: 'Total Savings',
+                    data: savingsTotal,
+                    borderColor: '#00b86b',
+                    backgroundColor: greenGradient,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#00b86b',
+                    pointRadius: 7,
+                    pointHoverRadius: 10,
+                    pointBorderWidth: 3,
+                    fill: true,
+                    order: 1
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 15 } } },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ₱ ' + context.parsed.y.toLocaleString();
+                        }
+                    },
+                    backgroundColor: '#fff',
+                    titleColor: '#00b86b',
+                    bodyColor: '#222',
+                    borderColor: '#00b86b',
+                    borderWidth: 1.5,
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 4,
+                },
+                point: {
+                    borderWidth: 3,
+                    radius: 7,
+                    hoverRadius: 10,
+                    backgroundColor: '#fff',
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart'
+            },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'PHP Saved' }, grid: { color: '#eee' } },
+                x: { title: { display: true, text: 'Week' }, grid: { color: '#f7f7f7' } }
+            }
+        }
+    });
+    </script>
 </body>
 </html> 
