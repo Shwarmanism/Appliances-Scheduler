@@ -48,8 +48,9 @@ class Appliances(db.Model):
 class OptimizedAppliances(db.Model):
     __tablename__=('optimized_appliances')
 
+    optimized_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    combination_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    combination_id = db.Column(db.Integer, nullable=False)
     appliances_id = db.Column(db.String(25), db.ForeignKey('appliances.appliances_id'), nullable=False)
     date_created = db.Column(db.Date, nullable=False)
 

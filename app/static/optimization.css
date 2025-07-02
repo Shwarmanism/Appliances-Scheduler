@@ -287,3 +287,28 @@
     color: #aaa;
     border: 2px solid #ccc;
 }
+
+#saveBtn {
+  font-size: 1.1rem;
+  padding: 10px 32px;
+  border-radius: 10px;
+  border: 2px solid #00b86b;
+  color: #fff;
+  background: #00b86b;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+  box-shadow: 0 3px 10px rgba(0, 184, 107, 0.2);
+}
+
+#saveBtn:hover {
+  background: #00a45c;
+  border-color: #00a45c;
+  transform: translateY(-1px);
+}
+
+#saveBtn:active {
+  background: #008d4f;
+  border-color: #008d4f;
+  transform: translateY(0);
+}

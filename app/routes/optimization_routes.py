@@ -10,7 +10,10 @@ optimizer = Blueprint('optimizer', __name__)
 @optimizer.route('/optimize', methods=['GET', 'POST'])
 @login_required
 def optimize_appliances():
+    print("[DEBUG] Entered /optimize route")
+
     user_appliances = Appliances.query.filter_by(user_id=current_user.user_id).all()
+    print(f"[DEBUG] Retrieved {len(user_appliances)} appliances from DB")
 
     for a in user_appliances:
         if a.daily_energy is not None:
@@ -22,7 +25,7 @@ def optimize_appliances():
                 a.priority = 1
         else:
             a.priority = 0
-
+        print(f"[DEBUG] Appliance: {a.model}, Daily Energy: {a.daily_energy}, Priority: {a.priority}")
 
     optimized = []
     total_energy = 0
@@ -32,27 +35,41 @@ def optimize_appliances():
 
     if request.method == 'POST':
         try:
-            cap = float(request.form.get('energy-cap'))
+            cap_raw = request.form.get('energy-cap', '').strip()
+            if not cap_raw:
+                raise ValueError("Energy cap is empty.")
+            cap = float(cap_raw)
+
             optimized = knapsack(user_appliances, cap)
+            print(f"[DEBUG] Optimized appliances selected: {[a.model for a in optimized]}")
+
             total_energy = sum(a.daily_energy for a in optimized)
             total_priority = sum(a.priority for a in optimized)
             save_cost = total_save(user_appliances, optimized)
 
-            save_process = request.form.get('save_not')
+            print(f"[DEBUG] Total Energy: {total_energy} kWh")
+            print(f"[DEBUG] Total Priority Score: {total_priority}")
+            print(f"[DEBUG] Estimated Savings: ₱{save_cost}")
 
+            save_process = request.form.get('save_not')
             if save_process == "save":
                 combination_id = f'Combi-{uuid4().hex[:4]}'
+                print(f"[DEBUG] Saving optimized combination with ID: {combination_id}")
+
                 for appliance in optimized:
+                    print(f"[DEBUG] Saving appliance: {appliance.model} to DB")
                     entry = OptimizedAppliances(
                         user_id=current_user.user_id,
                         combination_id=combination_id,
                         appliances_id=appliance.appliances_id,
-                        created_at=datetime.now()
+                        date_created=datetime.now()
                     )
                     db.session.add(entry)
                 db.session.commit()
+                print("[DEBUG] Optimized combination saved to DB")
 
-        except ValueError:
+        except ValueError as e:
+            print(f"[ERROR] Invalid input for energy cap: {e}")
             flash("Please enter a valid energy capacity.", "danger")
 
     return render_template('optimization.html',

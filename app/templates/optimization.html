@@ -76,11 +76,19 @@
                 </div>
             </div>
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
-                <form action="/optimize" method="POST">
+                <form id="optForm" action="/optimize" method="POST">
                     <input type="hidden" name="energy-cap" id="form-energy-cap" value="">
+                    <input type="hidden" name="save_not" id="saveNotInput" value="">
+
                     <button id="optimizeBtn" type="submit" class="add-appliance-btn"
-                            style="font-size:1.1rem; padding:10px 32px; border-radius:10px; border:2px solid #ccc; color:#aaa; background:#f3f3f3; font-weight:700; cursor:not-allowed; transition:background 0.2s, color 0.2s, border 0.2s, opacity 0.2s; opacity:0.7;" disabled>
+                            style="font-size: 1.1rem; padding: 10px 32px; border-radius: 10px; border: 2px solid #ccc; color: #aaa; background: #f3f3f3; font-weight: 700; cursor: not-allowed; opacity: 0.7;"
+                            disabled>
                         Optimize
+                    </button>
+
+                    <button id="saveBtn" type="submit" class="add-appliance-btn"
+                            style="margin-left: 12px; font-size: 1.1rem; padding: 10px 32px; border-radius: 10px; border: 2px solid #00b86b; color: #fff; background: #00b86b; font-weight: 700;">
+                        Save Combination
                     </button>
                 </form>
             </div>
@@ -119,46 +127,65 @@
             <style>
             @keyframes spin { 100% { transform: rotate(360deg); } }
             </style>
-            <script>
-            const optimizeBtn = document.getElementById('optimizeBtn');
-            const capInput = document.getElementById('energy-cap');
-            const setCapBtn = document.getElementById('setCapBtn');
-            const formCapHidden = document.getElementById('form-energy-cap');
-            const notif = document.getElementById('optNotif');
+           <script>
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    const capInput = document.getElementById('energy-cap');
+    const setCapBtn = document.getElementById('setCapBtn');
+    const formCapHidden = document.getElementById('form-energy-cap');
+    const notif = document.getElementById('optNotif');
+    const saveInput = document.getElementById('saveNotInput');
+    const form = optimizeBtn.closest('form');
 
-            function showOptNotif(msg) {
-                notif.textContent = msg;
-                notif.style.display = 'block';
-                notif.className = 'opt-toast-show';
-                setTimeout(() => {
-                    notif.className = notif.className.replace('opt-toast-show', '');
-                    notif.style.display = 'none';
-                }, 2000);
-            }
+    function showOptNotif(msg) {
+        notif.textContent = msg;
+        notif.style.display = 'block';
+        notif.className = 'opt-toast-show';
+        setTimeout(() => {
+            notif.className = notif.className.replace('opt-toast-show', '');
+            notif.style.display = 'none';
+        }, 2000);
+    }
 
-            setCapBtn.onclick = () => {
-                const val = parseFloat(capInput.value);
-                if (!isNaN(val) && val > 0) {
-                    optimizeBtn.disabled = false;
-                    optimizeBtn.style.opacity = "1";
-                    optimizeBtn.style.cursor = "pointer";
-                    optimizeBtn.style.background = "#fff";
-                    optimizeBtn.style.color = "#f25622";
-                    optimizeBtn.style.border = "2px solid #f25622";
+    // When "Set" button clicked
+    setCapBtn.onclick = () => {
+        const val = parseFloat(capInput.value);
+        if (!isNaN(val) && val > 0) {
+            optimizeBtn.disabled = false;
+            optimizeBtn.style.opacity = "1";
+            optimizeBtn.style.cursor = "pointer";
+            optimizeBtn.style.background = "#fff";
+            optimizeBtn.style.color = "#f25622";
+            optimizeBtn.style.border = "2px solid #f25622";
 
-                    // sync input to form
-                    formCapHidden.value = val;
-                } else {
-                    optimizeBtn.disabled = true;
-                    optimizeBtn.style.opacity = "0.7";
-                    optimizeBtn.style.cursor = "not-allowed";
-                    optimizeBtn.style.background = "#f3f3f3";
-                    optimizeBtn.style.color = "#aaa";
-                    optimizeBtn.style.border = "2px solid #ccc";
-                    showOptNotif('Set the energy usage cap first.');
-                }
-            };
-            </script>
+            // Sync value to hidden input
+            formCapHidden.value = val;
+        } else {
+            optimizeBtn.disabled = true;
+            optimizeBtn.style.opacity = "0.7";
+            optimizeBtn.style.cursor = "not-allowed";
+            optimizeBtn.style.background = "#f3f3f3";
+            optimizeBtn.style.color = "#aaa";
+            optimizeBtn.style.border = "2px solid #ccc";
+            showOptNotif('Set the energy usage cap first.');
+        }
+    };
+
+    // Sync energy cap on ANY form submit (Optimize or Save)
+    form.addEventListener('submit', (e) => {
+        const val = parseFloat(capInput.value);
+        if (isNaN(val) || val <= 0) {
+            e.preventDefault();
+            showOptNotif('Please set a valid energy cap before submitting.');
+            return;
+        }
+        formCapHidden.value = val;  // always update hidden field
+    });
+
+    // Mark the intent to "save"
+    document.getElementById('saveBtn').addEventListener('click', () => {
+        saveInput.value = 'save';
+    });
+</script>
         </main>
     </div>
 </body>

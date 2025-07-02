@@ -310,6 +310,11 @@
     document.getElementById('optimizedPopup').style.display = 'flex';
     };
 
+    document.querySelector('#optimizedPopup .submit-btn').addEventListener('click', () => {
+    selectedType = 'optimized';
+    updateSelectBtn();
+    });
+
     {% if selected_type == 'optimized' %}
         window.addEventListener('load', function () {
             document.getElementById('optimizedPopup').style.display = 'flex';

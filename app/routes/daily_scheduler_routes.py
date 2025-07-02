@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import io
 import base64
+import random
 
 scheduler = Blueprint('scheduler', __name__)
 
@@ -27,7 +28,22 @@ def schedule():
 
     if request.method == 'POST':
         try:
-            hourly_rates = [7.48 if 8 <= h <= 21 else 3.55 for h in range(24)]
+            random.seed(42)  # optional: makes results reproducible
+
+            hourly_rates = []
+            for hour in range(24):
+                if 0 <= hour < 6:
+                    rate = round(random.uniform(3.0, 3.8), 2)  # Off-peak early morning
+                elif 6 <= hour < 12:
+                    rate = round(random.uniform(5.0, 6.5), 2)  # Morning ramp-up
+                elif 12 <= hour < 18:
+                    rate = round(random.uniform(6.5, 8.0), 2)  # Midday peak
+                elif 18 <= hour < 22:
+                    rate = round(random.uniform(7.0, 8.5), 2)  # Evening high
+                else:
+                    rate = round(random.uniform(4.0, 5.0), 2)  # Late evening cool-down
+                hourly_rates.append(rate)
+
             selected_type = request.form.get('selected_type') 
             time_start = int(request.form.get('time_start') or 0)
             time_end = int(request.form.get('time_end') or 23)
@@ -134,35 +150,40 @@ def schedule():
     )
 
 def dijkstra_schedule(rates, wattage, duration, time_start=0, time_end=23):
-    max_available_hours = time_end - time_start + 1
+    # Handle wrap-around case like 19 (7 PM) to 13 (1 PM next day)
+    valid_hours = []
+    h = time_start
+    while True:
+        valid_hours.append(h % 24)
+        if h % 24 == time_end % 24:
+            break
+        h += 1
 
-    if time_end < time_start or max_available_hours <= 0:
-        return None 
+    if len(valid_hours) < 1:
+        return None
 
-    actual_duration = min(duration, max_available_hours)
+    actual_duration = min(duration, len(valid_hours))
     if actual_duration <= 0:
         return None
 
     costs = []
-    for start in range(time_start, time_end - actual_duration + 2):
-        total_cost = 0
-        for h in range(start, start + actual_duration):
-            total_cost += (wattage / 1000) * rates[h % 24]
-        costs.append((total_cost, start))
+    for i in range(len(valid_hours) - actual_duration + 1):
+        slot = valid_hours[i:i + actual_duration]
+        cost = sum((wattage / 1000) * rates[h] for h in slot)
+        costs.append((cost, slot[0], slot))
 
     if not costs:
         return None
 
-    best_cost, best_start = min(costs, key=lambda x: x[0])
-    best_range = [(best_start + i) % 24 for i in range(actual_duration)]
-
+    best_cost, best_start, best_hours = min(costs, key=lambda x: x[0])
     return {
         "start_hour": best_start,
         "duration": actual_duration,
         "cost": round(best_cost, 2),
-        "hours": best_range,
+        "hours": best_hours,
         "is_partial": actual_duration < duration
     }
+
 
 
 
