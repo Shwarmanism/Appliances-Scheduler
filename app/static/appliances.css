@@ -163,7 +163,6 @@
     white-space: nowrap;
     text-align: right;
     flex-shrink: 0;
-    margin-left: 24px;
 }
 .add-appliance-row {
     display: flex;

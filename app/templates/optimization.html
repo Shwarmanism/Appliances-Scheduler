@@ -59,22 +59,25 @@
                 <b>Find the best way to use your appliances while saving energy!</b><br>
                 Set your daily energy usage limit below. We'll suggest the smartest mix of appliances to help you stay within your goal, while still enjoying comfort and convenience. The higher the importance, the more likely an appliance is included in your plan.
             </div>
-           <div class="optimization-cards-row">
+           <div class="optimization-cards-row" style="display: flex; justify-content: center; align-items: flex-start;">
                 <div class="glass optimization-cap-card">
-                    <label for="energy-cap" style="font-weight:600; font-size:1.1rem;">Energy Usage Cap:</label>
-                    <input type="number" id="energy-cap" name="energy-cap" min="1" max="24" step="0.1" value="{{ energy_cap }}" ...
-                        style="width:90px; font-size:1.1rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222; font-weight:600;">
-                    <span style="font-size:1.1rem; color:#888;">kWh/day</span>
-                    <button type="button" id="setCapBtn" class="add-appliance-btn">Set</button>
+                    <div class="cap-card-flex-row">
+                        <label for="energy-cap" style="font-weight:600; font-size:1.1rem; margin-right:12px;">Energy Usage Cap:</label>
+                        <input type="number" id="energy-cap" name="energy-cap" min="1" max="24" step="0.1" value="{{ energy_cap }}"
+                            style="width:90px; font-size:1.1rem; padding:6px 10px; border-radius:8px; border:1.5px solid #e0e0e0; background:#fff; color:#222; font-weight:600; margin-right:8px;">
+                        <span style="font-size:1.1rem; color:#888; margin-right:16px;">kWh/day</span>
+                        <button type="button" id="setCapBtn" class="add-appliance-btn" style="margin-left:0;">Set</button>
+                    </div>
                 </div>
                 <div class="glass optimization-savings-card">
                     <div class="optimization-savings-bar"></div>
                     <div class="optimization-savings-content">
                         <div class="summary-title" style="font-size:1.15rem; color:#111;">Total Savings</div>
-                        <div class="summary-value" style="font-size:2rem; color:#00b86b;">₱{{ save_cost }}</div>
+                        <div class="summary-value" style="font-size:2rem; color:#00b86b;">₱ {{ save_cost }}</div>
                     </div>
                 </div>
             </div>
+            <div id="optNotif" class="opt-toast" style="display:none; margin: 0 auto 14px auto; max-width: 400px;"></div>
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
                 <form id="optForm" action="/optimize" method="POST">
                     <input type="hidden" name="energy-cap" id="form-energy-cap" value="">
@@ -85,34 +88,33 @@
                             disabled>
                         Optimize
                     </button>
-
-                    <button id="saveBtn" type="submit" class="add-appliance-btn"
-                            style="margin-left: 12px; font-size: 1.1rem; padding: 10px 32px; border-radius: 10px; border: 2px solid #00b86b; color: #fff; background: #00b86b; font-weight: 700;">
-                        Save Combination
-                    </button>
                 </form>
             </div>
-            <div id="optimizationCardsSection" class="glass optimization-cards-section">
-                <div style="font-weight:800; font-size:1.35rem; margin-bottom:28px; color:#f25622; text-align:center; letter-spacing:1px;">Your Optimized Appliance Plan</div>
+            <div id="optimizationCardsSection" class="glass optimization-cards-section" data-has-appliances="{{ 'true' if appliances else 'false' }}">
+                <div id="optPlanHeader" style="position: relative; display: flex; align-items: center; justify-content: flex-end; min-height: 48px; margin-bottom: 16px;">
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); font-weight:800; font-size:1.35rem; color:#f25622; text-align:center; letter-spacing:1px; white-space:nowrap;">Your Optimized Appliance Plan</div>
+                    <form id="saveForm" action="/optimize" method="POST" style="display:none; margin:0;">
+                        <input type="hidden" name="energy-cap" id="saveForm-energy-cap" value="">
+                        <input type="hidden" name="save_not" value="save">
+                        <button id="saveBtn" type="submit" class="add-appliance-btn"
+                                style="font-size: 1.1rem; padding: 10px 32px; border-radius: 10px; border: 2px solid #00b86b; color: #fff; background: #00b86b; font-weight: 700;">
+                            Save Combination
+                        </button>
+                    </form>
+                </div>
                 <div id="optimizationLoading" style="display:none; justify-content:center; align-items:center; min-height:120px;">
                     <div class="loader" style="margin:auto; width:48px; height:48px; border:6px solid #ffd600; border-top:6px solid #f25622; border-radius:50%; animation:spin 1s linear infinite;"></div>
                 </div>
-                <div id="optimizedSequence" class="optimized-sequence" style="{% if appliances %}display: flex;{% else %}display: none;{% endif %}">
+                <div id="optimizedSequence" class="optimized-sequence" style="display: none;">
                 {% for a in appliances %}
-                    <div class="optimized-appliance-card" style="border-left:7px solid 
-                    {% if a.priority == 3 %}#f25622{% elif a.priority == 2 %}#00d26a
-                    {% elif a.priority == 1 %}#ffd600{% else %}#6e6e6e{% endif %};">
+                <div class="optimized-appliance-card"
+                     style="border-left:7px solid {{ '#f25622' if a.priority == 3 else '#00d26a' if a.priority == 2 else '#ffd600' if a.priority == 1 else '#6e6e6e' }};">
                     <div style="font-size:1.13rem; font-weight:800; color:#222; margin-bottom:4px;">{{ a.model }}</div>
                     <div style="color:#888; font-size:1.01rem; margin-bottom:2px;">{{ a.daily_energy }} kWh</div>
-                    <div style="color:
-                        {% if a.priority == 3 %}#f25622{% elif a.priority == 2 %}#00d26a
-                        {% elif a.priority == 1 %}#ffd600{% else %}#6e6e6e{% endif %};
-                        font-weight:700; font-size:0.98rem;">
-                        Importance: 
-                        {% if a.priority == 3 %}High{% elif a.priority == 2 %}Medium
-                        {% elif a.priority == 1 %}Low{% else %}None{% endif %}
+                    <div style="color:{{ '#f25622' if a.priority == 3 else '#00d26a' if a.priority == 2 else '#ffd600' if a.priority == 1 else '#6e6e6e' }}; font-weight:700; font-size:0.98rem;">
+                        Importance: {{ 'High' if a.priority == 3 else 'Medium' if a.priority == 2 else 'Low' if a.priority == 1 else 'None' }}
                     </div>
-                    </div>
+                </div>
                 {% endfor %}
                 </div>
                 <div id="optimizationPlanSummary" style="margin-top:32px; text-align:center; color:#6e6e6e; font-size:1.13rem; font-weight:600; letter-spacing:0.2px; display:none;">
@@ -124,8 +126,66 @@
                     {% endif %}
                 </div>
             </div>
+            {% if save_success %}
+            <div id="saveSuccessNotif" class="opt-toast-success" style="margin: 24px auto 0 auto; max-width: 400px;">Successfully saved!</div>
+            {% endif %}
             <style>
             @keyframes spin { 100% { transform: rotate(360deg); } }
+            .optimization-cards-row {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+            }
+            .optimization-cap-card {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 18px 22px 18px 22px;
+                margin-bottom: 0;
+            }
+            .cap-card-flex-row {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .optimization-cap-card input[type="number"] {
+                margin-right: 8px;
+            }
+            .optimization-cap-card button {
+                margin-left: 0;
+            }
+            .opt-toast {
+                background: #ffeaea;
+                color: #d32f2f;
+                border: 1px solid #ffbdbd;
+                border-radius: 7px;
+                padding: 8px 18px;
+                font-size: 1rem;
+                font-weight: 600;
+                margin-top: 10px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(255,0,0,0.04);
+                z-index: 10;
+                transition: opacity 0.3s;
+            }
+            .opt-toast-show {
+                display: block !important;
+                opacity: 1;
+            }
+            .opt-toast-success {
+                background: #eaffea;
+                color: #1b7e2a;
+                border: 1px solid #baffc9;
+                border-radius: 7px;
+                padding: 8px 18px;
+                font-size: 1rem;
+                font-weight: 600;
+                margin-top: 10px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(0,128,0,0.04);
+                z-index: 10;
+                transition: opacity 0.3s;
+            }
             </style>
            <script>
     const optimizeBtn = document.getElementById('optimizeBtn');
@@ -133,17 +193,15 @@
     const setCapBtn = document.getElementById('setCapBtn');
     const formCapHidden = document.getElementById('form-energy-cap');
     const notif = document.getElementById('optNotif');
-    const saveInput = document.getElementById('saveNotInput');
     const form = optimizeBtn.closest('form');
+    const optimizedSequence = document.getElementById('optimizedSequence');
+    const optimizationPlanSummary = document.getElementById('optimizationPlanSummary');
+    const saveForm = document.getElementById('saveForm');
 
     function showOptNotif(msg) {
         notif.textContent = msg;
         notif.style.display = 'block';
         notif.className = 'opt-toast-show';
-        setTimeout(() => {
-            notif.className = notif.className.replace('opt-toast-show', '');
-            notif.style.display = 'none';
-        }, 2000);
     }
 
     // When "Set" button clicked
@@ -181,9 +239,21 @@
         formCapHidden.value = val;  // always update hidden field
     });
 
-    // Mark the intent to "save"
-    document.getElementById('saveBtn').addEventListener('click', () => {
-        saveInput.value = 'save';
+    // Show optimized plan and Save button after optimization (simulate after form submit)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pass hasAppliances from a data attribute on the section
+        const optimizationCardsSection = document.getElementById('optimizationCardsSection');
+        const hasAppliances = optimizationCardsSection.getAttribute('data-has-appliances') === 'true';
+        if (hasAppliances) {
+            optimizedSequence.style.display = 'flex';
+            optimizationPlanSummary.style.display = 'block';
+            saveForm.style.display = 'block';
+            document.getElementById('saveForm-energy-cap').value = capInput.value;
+        } else {
+            optimizedSequence.style.display = 'none';
+            optimizationPlanSummary.style.display = 'none';
+            saveForm.style.display = 'none';
+        }
     });
 </script>
         </main>

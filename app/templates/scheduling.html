@@ -89,7 +89,7 @@
                         <label style="font-weight:600; font-size:1.1rem;">What to Smart Schedule:</label>
                         <button type="button" class="add-appliance-btn" id="selectScheduleBtn" style="margin-top:12px; width:100%;">Select</button>
                         <span id="selectedScheduleType" style="display:none; margin-top:8px; font-weight:700; color:#f25622;"></span>
-                        <ul id="selectedApplianceList" style="display:none; margin:10px 0 0 0; padding-left:20px; color:#444; font-weight:600; list-style:disc inside;"></ul>
+                        <ul id="selectedApplianceList" style="display:none; margin:10px 0 0 0; padding-left:0px; color:#444; font-weight:600; list-style:disc inside;"></ul>
                         <div class="form-group" style="margin-top:18px;">
                             <label for="preferred-range" style="font-weight:600; font-size:1.1rem;">Preferred Scheduling Range:</label>
                             <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
@@ -212,11 +212,11 @@
             <button class="modal-close-btn" onclick="document.getElementById('optimizedPopup').style.display='none'">&times;</button>
             <h2>Optimized Appliances</h2>
             <div style="margin-bottom:18px;">These appliances will be scheduled:</div>
-            <ul style="text-align:left; margin-bottom:18px;">
+            <div class="optimized-appliance-grid" style="margin-bottom:18px;">
                 {% for appliance_id in optimized_appliances %}
-                    <li>{{ model_map[appliance_id] }}</li>
+                    <div class="optimized-appliance-card">{{ model_map[appliance_id] }}</div>
                 {% endfor %}
-            </ul>
+            </div>
             <button class="submit-btn" onclick="document.getElementById('optimizedPopup').style.display='none'">Confirm</button>
         </div>
     </div>
@@ -227,14 +227,20 @@
             <h2>Select Appliances to Schedule</h2>
             <div style="margin-bottom:18px;">Choose from your toggled appliances:</div>
            <form id="customApplianceForm">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; width: 100%;">
+                    <span style="font-weight: 800; color: #227be6; font-size: 1.08rem;">Appliance List</span>
+                    <button type="button" class="custom-btn" id="selectAllCustom" style="padding: 4px 16px; font-size: 0.98rem;">Select All</button>
+                </div>
+                <div class="custom-appliance-grid">
                 {% for appliance in on_appliances %}
                     <label>
                         <input type="checkbox" name="selected_appliances" value="{{ appliance.appliances_id }}" {% if loop.first %}checked{% endif %}>
                         {{ appliance.model }}
-                    </label><br>
+                    </label>
                 {% else %}
                     <p style="color:#888; font-weight:600;">No appliances are currently turned ON.</p>
                 {% endfor %}
+                </div>
             </form> 
             <button class="submit-btn" id="confirmCustomBtn">Confirm</button>
         </div>
@@ -255,46 +261,30 @@
             selectBtn.className = 'optimized-btn';
             selectedTypeSpan.style.display = 'none';
             selectedApplianceList.style.display = 'block';
+            const ul = document.createElement('ul');
+            ul.className = 'selected-appliance-list-grid';
             optimizedAppliances.forEach(id => {
                 const li = document.createElement('li');
+                li.className = 'selected-appliance-card';
                 li.textContent = applianceMap[id] || id;
-                selectedApplianceList.appendChild(li);
+                ul.appendChild(li);
             });
+            selectedApplianceList.appendChild(ul);
         } else if (selectedType === 'custom') {
             selectBtn.textContent = 'Custom Selected';
             selectBtn.className = 'custom-btn';
             selectedTypeSpan.style.display = 'none';
             selectedApplianceList.style.display = 'block';
             const checked = getCheckedCustomAppliances();
-            if (checked.length <= 4) {
-                checked.forEach(id => {
-                    const li = document.createElement('li');
-                    li.textContent = applianceMap[id] || id;
-                    selectedApplianceList.appendChild(li);
-                });
-            } else {
-                const col1 = document.createElement('ul');
-                const col2 = document.createElement('ul');
-                col1.style.listStyle = col2.style.listStyle = 'disc inside';
-                col1.style.margin = col2.style.margin = '0';
-                col1.style.padding = col2.style.padding = '0 20px 0 0';
-                col1.style.flex = col2.style.flex = '1';
-                checked.slice(0, 4).forEach(id => {
-                    const li = document.createElement('li');
-                    li.textContent = applianceMap[id] || id;
-                    col1.appendChild(li);
-                });
-                checked.slice(4).forEach(id => {
-                    const li = document.createElement('li');
-                    li.textContent = applianceMap[id] || id;
-                    col2.appendChild(li);
-                });
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.appendChild(col1);
-                row.appendChild(col2);
-                selectedApplianceList.appendChild(row);
-            }
+            const ul = document.createElement('ul');
+            ul.className = 'selected-appliance-list-grid';
+            checked.forEach(id => {
+                const li = document.createElement('li');
+                li.className = 'selected-appliance-card';
+                li.textContent = applianceMap[id] || id;
+                ul.appendChild(li);
+            });
+            selectedApplianceList.appendChild(ul);
         } else {
             selectBtn.textContent = 'Select';
             selectBtn.className = 'add-appliance-btn';
@@ -397,6 +387,13 @@
         const cbArray = checkboxes.length ? Array.from(checkboxes) : [checkboxes];
         return cbArray.filter(cb => cb.checked).map(cb => cb.value);
     }
+    document.getElementById('selectAllCustom').onclick = function(e) {
+        e.preventDefault();
+        const form = document.getElementById('customApplianceForm');
+        const checkboxes = form.querySelectorAll('input[type="checkbox"][name="selected_appliances"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => { cb.checked = !allChecked; });
+    };
     updateSelectBtn();
     </script>
     <style>
