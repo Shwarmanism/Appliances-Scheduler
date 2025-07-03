@@ -53,7 +53,7 @@ def schedule():
             print("   time_start:", time_start)
             print("   time_end:", time_end)
 
-            if selected_type == 'optimized':
+            if selected_type == 'OPT':
                 latest_combination = db.session.query(OptimizedAppliances.combination_id) \
                     .filter_by(user_id=current_user.user_id) \
                     .order_by(OptimizedAppliances.date_created.desc()) \
@@ -87,7 +87,17 @@ def schedule():
                     time_end
                 )
             
-            if selected_type == 'optimized' and action_save == 'save':
+            if action_save == 'save':
+                selected_type = request.form.get("selected_type")
+                selected_appliances = request.form.getlist("selected_appliances")
+                time_start = request.form.get("time_start")
+                time_end = request.form.get("time_end")
+
+                print("💾 [SAVE] POST received")
+                print(f"📥 selected_type: {selected_type}")
+                print(f"📦 selected_appliances: {selected_appliances}")
+                print(f"🕒 Time range: {time_start} to {time_end}")
+                schedule_type_code = 'OPT' if selected_type == 'OPT' else 'CUS'
                 for a in selected:
                     result = schedule.get(a.model)
                     if result:
@@ -100,11 +110,18 @@ def schedule():
                             cost=result['cost'],
                             energy_kwh=energy_kwh,
                             is_partial=result['is_partial'],
-                            hours_used=",".join(str(h) for h in result['hours'])
+                            hours_used=",".join(str(h) for h in result['hours']),
+                            selected_type=schedule_type_code
+
                         )
                         db.session.add(usage)
 
-                db.session.commit()
+                try:
+                    db.session.commit()
+                    flash("✅ Schedule successfully saved!", "success")
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f"❌ Failed to save schedule: {e}", "danger")
             
             total_cost = sum(info['cost'] for info in schedule.values())
             total_energy = sum(
@@ -146,31 +163,42 @@ def schedule():
         plot_url=plot_url,
         on_appliances=[a for a in appliances if a.status == 'on'],
         model_map=model_map,
-        optimized_appliances=optimized_appliances
+        optimized_appliances=optimized_appliances,
+        
+        selected_type=request.form.get('selected_type'),
+        time_start=request.form.get('time_start'),
+        time_end=request.form.get('time_end')
     )
 
+
 def dijkstra_schedule(rates, wattage, duration, time_start=0, time_end=23):
-    # Handle wrap-around case like 19 (7 PM) to 13 (1 PM next day)
-    valid_hours = []
-    h = time_start
-    while True:
-        valid_hours.append(h % 24)
-        if h % 24 == time_end % 24:
-            break
-        h += 1
+    if len(rates) < 24:
+        raise ValueError("Rates list must contain 24 hourly entries.")
 
-    if len(valid_hours) < 1:
-        return None
+    valid_hours = [(time_start + i) % 24 for i in range((time_end - time_start) % 24 or 24)]
 
-    actual_duration = min(duration, len(valid_hours))
-    if actual_duration <= 0:
+    if not valid_hours:
         return None
 
     costs = []
-    for i in range(len(valid_hours) - actual_duration + 1):
-        slot = valid_hours[i:i + actual_duration]
+    for i in range(len(valid_hours) - duration + 1):
+        slot = valid_hours[i:i + duration]
+        if len(slot) < duration:
+            continue
         cost = sum((wattage / 1000) * rates[h] for h in slot)
         costs.append((cost, slot[0], slot))
+
+    is_partial = False
+    if not costs:
+        for partial in range(duration - 1, 0, -1):
+            for i in range(len(valid_hours) - partial + 1):
+                slot = valid_hours[i:i + partial]
+                cost = sum((wattage / 1000) * rates[h] for h in slot)
+                costs.append((cost, slot[0], slot))
+            if costs:
+                is_partial = True
+                duration = partial
+                break
 
     if not costs:
         return None
@@ -178,10 +206,11 @@ def dijkstra_schedule(rates, wattage, duration, time_start=0, time_end=23):
     best_cost, best_start, best_hours = min(costs, key=lambda x: x[0])
     return {
         "start_hour": best_start,
-        "duration": actual_duration,
+        "duration": len(best_hours),
         "cost": round(best_cost, 2),
         "hours": best_hours,
-        "is_partial": actual_duration < duration
+        "is_partial": is_partial,
+        "end_hour": (best_start + len(best_hours)) % 24
     }
 
 

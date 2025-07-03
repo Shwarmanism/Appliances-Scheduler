@@ -28,28 +28,28 @@
                 </div>
             </div>
             <nav class="sidebar-nav">
-                <a href="../dashboard.html" class="nav-link">
-                    <span class="icon"><img src="../static/Home.svg" alt="Dashboard" class="sidebar-icon-svg"></span>
+                <a href="/dashboard" class="nav-link">
+                    <span class="icon"><img src="{{ url_for('static', filename='Home.svg') }}" alt="Dashboard" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Dashboard</span>
                 </a>
-                <a href="../appliances.html" class="nav-link">
-                    <span class="icon"><img src="../static/Appliances.svg" alt="Appliances" class="sidebar-icon-svg"></span>
+                <a href="/appliances" class="nav-link">
+                    <span class="icon"><img src="{{ url_for('static', filename='Appliances.svg') }}" alt="Appliances" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Appliances</span>
                 </a>
                 <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
-                    <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
+                    <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Optimization" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Optimization</span>
                 </a>
-                <a href="../scheduling.html" class="nav-link">
-                    <span class="icon"><img src="../static/Report.svg" alt="Scheduling" class="sidebar-icon-svg"></span>
+                <a href="/scheduling" class="nav-link">
+                    <span class="icon"><img src="{{ url_for('static', filename='Report.svg') }}" alt="Scheduling" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Scheduling</span>
                 </a>
-                <a href="#" class="nav-link active" aria-current="page">
-                    <span class="icon"><img src="../static/Analytics.svg" alt="Analytics" class="sidebar-icon-svg"></span>
+                <a href="/analytics" class="nav-link active" aria-current="page">
+                    <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Analytics" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Analytics</span>
                 </a>
-                <a href="#" class="nav-link">
-                    <span class="icon"><img src="../static/Profile.svg" alt="Settings" class="sidebar-icon-svg"></span>
+                <a href="/settings" class="nav-link">
+                    <span class="icon"><img src="{{ url_for('static', filename='Profile.svg') }}" alt="Settings" class="sidebar-icon-svg"></span>
                     <span class="nav-text">Settings</span>
                 </a>
             </nav>
