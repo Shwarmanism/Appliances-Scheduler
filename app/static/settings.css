@@ -1,0 +1,254 @@
+/* --- Settings Page Layout --- */
+.settings-wrapper {
+    max-width: 1100px;
+    margin: 48px auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 90vw;
+}
+.account-info, .logout-section {
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border-radius: 22px;
+    padding: 24px 56px 40px 56px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+.account-info {
+    border: 2.5px solid #2196f3;
+    gap: 8px;
+}
+.logout-section {
+    border: none;
+    margin-top: 0;
+    gap: 24px;
+}
+.section-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 24px;
+    color: var(--black);
+}
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+.form-row {
+    display: flex;
+    gap: 48px;
+    margin-bottom: 0;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1 1 0;
+    min-width: 220px;
+}
+.form-group label {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2px;
+    font-size: 1.1rem;
+}
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    padding: 14px 18px;
+    border: 2.5px solid var(--primary);
+    border-radius: 10px;
+    font-size: 1.15rem;
+    outline: none;
+    transition: border 0.2s;
+    background: #fff;
+}
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+    border: 2.5px solid #2196f3;
+}
+.update-btn, .change-password-btn {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    margin-top: 4px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px 0 rgba(242,86,34,0.10);
+}
+.update-btn:hover, .change-password-btn:hover {
+    background: var(--accent);
+    color: var(--black);
+    transform: translateY(-1px) scale(1.03);
+}
+.change-password-btn {
+    width: fit-content;
+    background: var(--primary);
+    color: #fff;
+    margin-top: 0;
+    padding: 12px 32px;
+}
+.logout-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+.logout-btn {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    color: var(--black);
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 56px;
+    box-shadow: 0 4px 16px 0 rgba(242,86,34,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.logout-btn:hover, .logout-btn:focus {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+    box-shadow: 0 8px 32px 0 rgba(255,223,0,0.22), 0 2px 12px 0 rgba(0,0,0,0.10);
+    transform: translateY(-2px) scale(1.04);
+}
+.logout-icon {
+    font-size: 1.3em;
+    margin-right: 6px;
+}
+@media (max-width: 1200px) {
+    .settings-wrapper {
+        max-width: 98vw;
+        padding: 0 12px;
+    }
+    .account-info, .logout-section {
+        padding: 32px 12px 24px 12px;
+    }
+    .form-row {
+        gap: 18px;
+    }
+}
+@media (max-width: 900px) {
+    .settings-wrapper {
+        max-width: 99vw;
+        padding: 0 4px;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .account-info, .logout-section {
+        padding: 18px 4px 14px 4px;
+    }
+}
+
+/* --- Change Password Modal --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+.modal-content {
+    background: var(--card-bg);
+    border: 2.5px solid #2196f3;
+    border-radius: 18px;
+    padding: 36px 32px 28px 32px;
+    min-width: 340px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+}
+.modal-title {
+    font-size: 1.45rem;
+    font-weight: 900;
+    margin-bottom: 18px;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.change-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.change-password-form label {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2px;
+    font-size: 1.08rem;
+}
+.change-password-form input[type="password"] {
+    padding: 10px 16px;
+    border: 2.5px solid var(--primary);
+    border-radius: 10px;
+    font-size: 1.08rem;
+    outline: none;
+    background: #fff;
+    margin-bottom: 4px;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1.5px 6px 0 rgba(33,150,243,0.18);
+}
+.change-password-form input[type="password"]:focus {
+    border: 2.5px solid var(--primary);
+    box-shadow: 0 2px 8px 0 rgba(33,150,243,0.22);
+}
+.modal-btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 18px;
+    margin-top: 12px;
+}
+.modal-cancel-btn {
+    background: #fff;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    padding: 9px 26px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px 0 rgba(33,150,243,0.18);
+}
+.modal-cancel-btn:hover {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 16px 0 rgba(33,150,243,0.28);
+}
+.modal-save-btn {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 26px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px 0 rgba(33,150,243,0.18);
+}
+.modal-save-btn:hover {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+    color: var(--black);
+    box-shadow: 0 6px 24px 0 rgba(33,150,243,0.28);
+} 

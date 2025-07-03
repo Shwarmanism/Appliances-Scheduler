@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Volt Vortex</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/dashboard.css">
+    <link rel="stylesheet" href="../static/analytics.css">
+    <link rel="stylesheet" href="../static/appliances.css">
+    <link rel="stylesheet" href="../static/settings.css">
+</head>
+<body>
+    <input type="checkbox" id="sidebar-toggle" hidden>
+    <div class="dashboard-container">
+        <aside class="sidebar glass">
+            <div class="sidebar-top">
+                <label for="sidebar-toggle" class="sidebar-hamburger-btn" aria-label="Toggle sidebar">
+                    <svg class="hamburger-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+                        <rect y="7" width="32" height="3" rx="1.5" fill="#ffdf00" />
+                        <rect y="14.5" width="32" height="3" rx="1.5" fill="#ffdf00" />
+                        <rect y="22" width="32" height="3" rx="1.5" fill="#ffdf00" />
+                    </svg>
+                </label>
+                <div class="sidebar-logo-block">
+                    <div class="sidebar-logo new-logo">⚡</div>
+                    <div class="sidebar-title">VOLT VORTEX</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-link">
+                    <span class="icon"><img src="../static/Home.svg" alt="Dashboard" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="/appliances" class="nav-link">
+                    <span class="icon"><img src="../static/Appliances.svg" alt="Appliances" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Appliances</span>
+                </a>
+                <a href="/optimization" class="nav-link">
+                    <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Optimization</span>
+                </a>
+                <a href="/scheduling" class="nav-link">
+                    <span class="icon"><img src="../static/Report.svg" alt="Scheduling" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Scheduling</span>
+                </a>
+                <a href="/analytics" class="nav-link">
+                    <span class="icon"><img src="../static/Analytics.svg" alt="Analytics" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+                <a href="/settings" class="nav-link active" aria-current="page">
+                    <span class="icon"><img src="../static/Profile.svg" alt="Settings" class="sidebar-icon-svg"></span>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+        </aside>
+        <main class="main-content gradient-bg">
+            <div class="settings-wrapper">
+                <section class="account-info glass">
+                    <h2 class="section-title">Account Information</h2>
+                    <form class="account-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" value="Juan Dela Cruz">
+                                <button type="button" class="update-btn">Update</button>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="juandelacruz@gmail.com">
+                                <button type="button" class="update-btn">Update</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact">Contact Number</label>
+                                <input type="text" id="contact" name="contact" value="+63 9851260957">
+                                <button type="button" class="update-btn">Update</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <button type="button" class="change-password-btn" id="openChangePasswordModal">Change Password</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+                <section class="logout-section glass">
+                    <form action="/logout" method="post" class="logout-form">
+                        <button type="submit" class="logout-btn">Logout</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+        <!-- Change Password Modal -->
+        <div id="changePasswordModal" class="modal-overlay" style="display:none;">
+            <div class="modal-content">
+                <h2 class="modal-title">Change Password</h2>
+                <form class="change-password-form">
+                    <label for="old-password">Old Password</label>
+                    <input type="password" id="old-password" name="old-password">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="new-password">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password">
+                    <div class="modal-btn-row">
+                        <button type="button" class="modal-cancel-btn" id="closeChangePasswordModal">Cancel</button>
+                        <button type="submit" class="modal-save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+        // Modal open/close logic
+        document.getElementById('openChangePasswordModal').onclick = function() {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        };
+        document.getElementById('closeChangePasswordModal').onclick = function() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        };
+        // Optional: close modal on overlay click
+        document.getElementById('changePasswordModal').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+        </script>
+    </div>
+</body>
+</html> 
