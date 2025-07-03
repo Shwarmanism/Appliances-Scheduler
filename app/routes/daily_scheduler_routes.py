@@ -53,7 +53,7 @@ def schedule():
             print("   time_start:", time_start)
             print("   time_end:", time_end)
 
-            if selected_type == 'optimized':
+            if selected_type == 'OPT':
                 latest_combination = db.session.query(OptimizedAppliances.combination_id) \
                     .filter_by(user_id=current_user.user_id) \
                     .order_by(OptimizedAppliances.date_created.desc()) \
@@ -87,7 +87,17 @@ def schedule():
                     time_end
                 )
             
-            if selected_type == 'optimized' and action_save == 'save':
+            if action_save == 'save':
+                selected_type = request.form.get("selected_type")
+                selected_appliances = request.form.getlist("selected_appliances")
+                time_start = request.form.get("time_start")
+                time_end = request.form.get("time_end")
+
+                print("💾 [SAVE] POST received")
+                print(f"📥 selected_type: {selected_type}")
+                print(f"📦 selected_appliances: {selected_appliances}")
+                print(f"🕒 Time range: {time_start} to {time_end}")
+                schedule_type_code = 'OPT' if selected_type == 'OPT' else 'CUS'
                 for a in selected:
                     result = schedule.get(a.model)
                     if result:
@@ -100,11 +110,18 @@ def schedule():
                             cost=result['cost'],
                             energy_kwh=energy_kwh,
                             is_partial=result['is_partial'],
-                            hours_used=",".join(str(h) for h in result['hours'])
+                            hours_used=",".join(str(h) for h in result['hours']),
+                            selected_type=schedule_type_code
+
                         )
                         db.session.add(usage)
 
-                db.session.commit()
+                try:
+                    db.session.commit()
+                    flash("✅ Schedule successfully saved!", "success")
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f"❌ Failed to save schedule: {e}", "danger")
             
             total_cost = sum(info['cost'] for info in schedule.values())
             total_energy = sum(
@@ -146,20 +163,32 @@ def schedule():
         plot_url=plot_url,
         on_appliances=[a for a in appliances if a.status == 'on'],
         model_map=model_map,
-        optimized_appliances=optimized_appliances
+        optimized_appliances=optimized_appliances,
+        
+        selected_type=request.form.get('selected_type'),
+        time_start=request.form.get('time_start'),
+        time_end=request.form.get('time_end')
     )
 
-def dijkstra_schedule(rates, wattage, duration, time_start=0, time_end=23):
-    # Handle wrap-around case like 19 (7 PM) to 13 (1 PM next day)
-    valid_hours = []
-    h = time_start
-    while True:
-        valid_hours.append(h % 24)
-        if h % 24 == time_end % 24:
-            break
-        h += 1
 
-    if len(valid_hours) < 1:
+def dijkstra_schedule(rates, wattage, duration, time_start=0, time_end=23):
+    if len(rates) < 24:
+        raise ValueError("Rates list must contain 24 hourly entries.")
+
+    # Build valid hour range
+    valid_hours = []
+
+    if time_start == time_end:
+        valid_hours = list(range(24))
+    else:
+        h = time_start
+        while True:
+            valid_hours.append(h % 24)
+            h = (h + 1) % 24
+            if h == (time_end + 1) % 24:
+                break
+
+    if not valid_hours:
         return None
 
     actual_duration = min(duration, len(valid_hours))
@@ -181,8 +210,10 @@ def dijkstra_schedule(rates, wattage, duration, time_start=0, time_end=23):
         "duration": actual_duration,
         "cost": round(best_cost, 2),
         "hours": best_hours,
-        "is_partial": actual_duration < duration
+        "is_partial": actual_duration < duration,
+        "end_hour": best_hours[-1]
     }
+
 
 
 

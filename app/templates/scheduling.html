@@ -85,11 +85,11 @@
                     </table>
                 </div>
                 <div class="glass scheduling-options-card">
-                    <form>
+                    <div>
                         <label style="font-weight:600; font-size:1.1rem;">What to Smart Schedule:</label>
                         <button type="button" class="add-appliance-btn" id="selectScheduleBtn" style="margin-top:12px; width:100%;">Select</button>
                         <span id="selectedScheduleType" style="display:none; margin-top:8px; font-weight:700; color:#f25622;"></span>
-                        <ul id="selectedApplianceList" style="display:none; margin:10px 0 0 0; padding-left:20px; color:#444; font-weight:600; list-style:disc inside;"></ul>
+                        <ul id="selectedApplianceList" style="display:none; margin:10px 0 0 0; padding-left:0px; color:#444; font-weight:600; list-style:disc inside;"></ul>
                         <div class="form-group" style="margin-top:18px;">
                             <label for="preferred-range" style="font-weight:600; font-size:1.1rem;">Preferred Scheduling Range:</label>
                             <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
@@ -149,17 +149,22 @@
                             </div>
                         </div>
                         <button type="button" class="submit-btn" id="generateScheduleBtn" style="margin-top:18px; width:100%;">Generate Schedule</button>
-                    </form>
+                    </div>
                 </div>
             </div>
             <div id="scheduleResultSection" class="glass schedule-result-section" style="display:block; margin-top:32px;">
-                <div class="schedule-section-title" style="color:#f25622; font-size:1.35rem; font-weight:800; text-align:center; margin-bottom:18px; letter-spacing:1px;">Your Generated Schedule</div>
+                <div class="schedule-section-title" style="color:#f25622; font-size:1.35rem; font-weight:800; text-align:center; margin-bottom:18px; letter-spacing:1px;">
+                    Your Generated Schedule
+                </div>
+
                 <div id="scheduleLoading" style="display:none; justify-content:center; align-items:center; min-height:120px;">
                     <div class="loader" style="margin:auto; width:48px; height:48px; border:6px solid #ffd600; border-top:6px solid #f25622; border-radius:50%; animation:spin 1s linear infinite;"></div>
                 </div>
-               <div id="scheduleEmpty" class="schedule-empty-state" style="display:{{ 'none' if schedule else 'block' }}; text-align:center; color:#aaa; font-size:1.1rem; min-height:80px;">
+
+                <div id="scheduleEmpty" class="schedule-empty-state" style="display:{{ 'none' if schedule else 'block' }}; text-align:center; color:#aaa; font-size:1.1rem; min-height:80px;">
                     No schedule yet. Click <b style="color:#888; font-weight:800;">Generate Schedule</b> to create your best appliance schedule!
                 </div>
+
                 <div id="scheduleResultContent" style="display:{{ 'block' if schedule else 'none' }};">
                     <div class="schedule-summary-bar">
                         <div class="summary-item"><span class="summary-label">Total Cost:</span>
@@ -169,20 +174,21 @@
                             <span class="summary-value">{{ '%.2f' | format(total_energy) }} kWh</span>
                         </div>
                     </div>
+
                     <div class="schedule-cards-row">
                         {% for model, data in schedule.items() %}
                             {% if data %}
                                 <div class="schedule-appliance-card">
                                     <div class="appliance-title">{{ model }}</div>
                                     <div class="appliance-time">
-                                    {{ data.start_hour|format_hour }} – {{ (data.start_hour + data.duration)|format_hour }}
-                                    {% if data.is_partial %}
-                                        <span style="color:#e67e22; font-weight:bold;">(Partially scheduled)</span>
-                                    {% endif %}
+                                        {{ data.start_hour|format_hour }} – {{ data.end_hour|format_hour }}
+                                        {% if data.is_partial %}
+                                            <span style="color:#e67e22; font-weight:bold;">(Partially scheduled)</span>
+                                        {% endif %}
                                     </div>
                                     <div class="appliance-cost">₱ {{ data.cost }}</div>
                                 </div>
-                                {% else %}
+                            {% else %}
                                 <div class="schedule-appliance-card">
                                     <div class="appliance-title">{{ model }}</div>
                                     <div class="appliance-time" style="color:#e74c3c;">Invalid schedule</div>
@@ -191,6 +197,18 @@
                             {% endif %}
                         {% endfor %}
                     </div>
+
+                    <!-- ✅ Save Form: only visible if schedule exists -->
+                    <form id="saveScheduleForm" method="POST" action="/scheduling" style="text-align:center; margin-top:20px;">
+                        <input type="hidden" name="selected_type" id="saveSelectedType">
+                        <input type="hidden" name="time_start" id="saveTimeStart">
+                        <input type="hidden" name="time_end" id="saveTimeEnd">
+                        <input type="hidden" name="action_save" value="save">
+                        <div id="saveApplianceInputs"></div>
+                        <button type="button" onclick="handleSaveSubmit(event)" class="submit-btn" style="padding: 12px 24px; font-size: 1rem;">
+                            💾 Save Schedule
+                        </button>
+                    </form>
                 </div>
             </div>
         </main>
@@ -212,11 +230,11 @@
             <button class="modal-close-btn" onclick="document.getElementById('optimizedPopup').style.display='none'">&times;</button>
             <h2>Optimized Appliances</h2>
             <div style="margin-bottom:18px;">These appliances will be scheduled:</div>
-            <ul style="text-align:left; margin-bottom:18px;">
+            <div class="optimized-appliance-grid" style="margin-bottom:18px;">
                 {% for appliance_id in optimized_appliances %}
-                    <li>{{ model_map[appliance_id] }}</li>
+                    <div class="optimized-appliance-card">{{ model_map[appliance_id] }}</div>
                 {% endfor %}
-            </ul>
+            </div>
             <button class="submit-btn" onclick="document.getElementById('optimizedPopup').style.display='none'">Confirm</button>
         </div>
     </div>
@@ -227,26 +245,87 @@
             <h2>Select Appliances to Schedule</h2>
             <div style="margin-bottom:18px;">Choose from your toggled appliances:</div>
            <form id="customApplianceForm">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; width: 100%;">
+                    <span style="font-weight: 800; color: #227be6; font-size: 1.08rem;">Appliance List</span>
+                    <button type="button" class="custom-btn" id="selectAllCustom" style="padding: 4px 16px; font-size: 0.98rem;">Select All</button>
+                </div>
+                <div class="custom-appliance-grid">
                 {% for appliance in on_appliances %}
                     <label>
                         <input type="checkbox" name="selected_appliances" value="{{ appliance.appliances_id }}" {% if loop.first %}checked{% endif %}>
                         {{ appliance.model }}
-                    </label><br>
+                    </label>
                 {% else %}
                     <p style="color:#888; font-weight:600;">No appliances are currently turned ON.</p>
                 {% endfor %}
+                </div>
             </form> 
             <button class="submit-btn" id="confirmCustomBtn">Confirm</button>
         </div>
     </div>
     <script>
     let selectedType = null;
+
+    {% if selected_type %}
+        selectedType = '{{ selected_type | lower }}' === 'opt' ? 'optimized' : 'custom';
+    {% endif %}
+
     const selectBtn = document.getElementById('selectScheduleBtn');
     const selectedTypeSpan = document.getElementById('selectedScheduleType');
     const selectedApplianceList = document.getElementById('selectedApplianceList');
-    
+
     const applianceMap = {{ model_map | tojson }};
     const optimizedAppliances = {{ optimized_appliances | tojson }};
+
+    const rangeStart = document.getElementById('range-start');
+    const rangeEnd = document.getElementById('range-end');
+
+    {% if time_start is not none %}
+        rangeStart.value = '{{ time_start }}';
+    {% endif %}
+    {% if time_end is not none %}
+        rangeEnd.value = '{{ time_end }}';
+    {% endif %}
+
+    function handleSaveSubmit(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('saveScheduleForm');
+        const selectedTypeInput = document.getElementById('saveSelectedType');
+        const timeStartInput = document.getElementById('saveTimeStart');
+        const timeEndInput = document.getElementById('saveTimeEnd');
+        const saveApplianceInputs = document.getElementById('saveApplianceInputs');
+
+        selectedTypeInput.value = selectedType === 'optimized' ? 'OPT' : 'CUS';
+        timeStartInput.value = rangeStart.value;
+        timeEndInput.value = rangeEnd.value;
+
+        const selected = selectedType === 'optimized'
+            ? optimizedAppliances
+            : getCheckedCustomAppliances();
+
+        if (selected.length === 0) {
+            alert("⚠️ No appliances selected to save.");
+            return;
+        }
+
+        saveApplianceInputs.innerHTML = '';
+        selected.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_appliances';
+            input.value = id;
+            saveApplianceInputs.appendChild(input);
+        });
+
+        console.log("💾 [SAVE] Submitting with:");
+        console.log(" → selected_type:", selectedTypeInput.value);
+        console.log(" → time_start:", timeStartInput.value);
+        console.log(" → time_end:", timeEndInput.value);
+        console.log(" → appliances:", selected);
+
+        form.submit();
+    }
 
     function updateSelectBtn() {
         selectedApplianceList.innerHTML = '';
@@ -255,46 +334,30 @@
             selectBtn.className = 'optimized-btn';
             selectedTypeSpan.style.display = 'none';
             selectedApplianceList.style.display = 'block';
+            const ul = document.createElement('ul');
+            ul.className = 'selected-appliance-list-grid';
             optimizedAppliances.forEach(id => {
                 const li = document.createElement('li');
+                li.className = 'selected-appliance-card';
                 li.textContent = applianceMap[id] || id;
-                selectedApplianceList.appendChild(li);
+                ul.appendChild(li);
             });
+            selectedApplianceList.appendChild(ul);
         } else if (selectedType === 'custom') {
             selectBtn.textContent = 'Custom Selected';
             selectBtn.className = 'custom-btn';
             selectedTypeSpan.style.display = 'none';
             selectedApplianceList.style.display = 'block';
             const checked = getCheckedCustomAppliances();
-            if (checked.length <= 4) {
-                checked.forEach(id => {
-                    const li = document.createElement('li');
-                    li.textContent = applianceMap[id] || id;
-                    selectedApplianceList.appendChild(li);
-                });
-            } else {
-                const col1 = document.createElement('ul');
-                const col2 = document.createElement('ul');
-                col1.style.listStyle = col2.style.listStyle = 'disc inside';
-                col1.style.margin = col2.style.margin = '0';
-                col1.style.padding = col2.style.padding = '0 20px 0 0';
-                col1.style.flex = col2.style.flex = '1';
-                checked.slice(0, 4).forEach(id => {
-                    const li = document.createElement('li');
-                    li.textContent = applianceMap[id] || id;
-                    col1.appendChild(li);
-                });
-                checked.slice(4).forEach(id => {
-                    const li = document.createElement('li');
-                    li.textContent = applianceMap[id] || id;
-                    col2.appendChild(li);
-                });
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.appendChild(col1);
-                row.appendChild(col2);
-                selectedApplianceList.appendChild(row);
-            }
+            const ul = document.createElement('ul');
+            ul.className = 'selected-appliance-list-grid';
+            checked.forEach(id => {
+                const li = document.createElement('li');
+                li.className = 'selected-appliance-card';
+                li.textContent = applianceMap[id] || id;
+                ul.appendChild(li);
+            });
+            selectedApplianceList.appendChild(ul);
         } else {
             selectBtn.textContent = 'Select';
             selectBtn.className = 'add-appliance-btn';
@@ -302,28 +365,30 @@
             selectedApplianceList.style.display = 'none';
         }
     }
-    selectBtn.onclick = function() {
+
+    selectBtn.onclick = function () {
         document.getElementById('scheduleTypePopup').style.display = 'flex';
     };
-    document.getElementById('chooseOptimizedBtn').onclick = function() {
-    document.getElementById('scheduleTypePopup').style.display = 'none';
-    document.getElementById('optimizedPopup').style.display = 'flex';
+
+    document.getElementById('chooseOptimizedBtn').onclick = function () {
+        document.getElementById('scheduleTypePopup').style.display = 'none';
+        document.getElementById('optimizedPopup').style.display = 'flex';
     };
 
     document.querySelector('#optimizedPopup .submit-btn').addEventListener('click', () => {
-    selectedType = 'optimized';
-    updateSelectBtn();
+        selectedType = 'optimized';
+        updateSelectBtn();
     });
 
     {% if selected_type == 'optimized' %}
-        window.addEventListener('load', function () {
-            document.getElementById('optimizedPopup').style.display = 'flex';
-        });
+    window.addEventListener('load', function () {
+        document.getElementById('optimizedPopup').style.display = 'flex';
+    });
     {% endif %}
-    
-    document.getElementById('chooseCustomBtn').onclick = function() {
-    document.getElementById('scheduleTypePopup').style.display = 'none';
-    document.getElementById('customPopup').style.display = 'flex';
+
+    document.getElementById('chooseCustomBtn').onclick = function () {
+        document.getElementById('scheduleTypePopup').style.display = 'none';
+        document.getElementById('customPopup').style.display = 'flex';
     };
 
     document.getElementById('generateScheduleBtn').onclick = function () {
@@ -336,30 +401,22 @@
         const typeInput = document.createElement('input');
         typeInput.type = 'hidden';
         typeInput.name = 'selected_type';
-        typeInput.value = selectedType;
+        typeInput.value = selectedType === 'optimized' ? 'OPT' : 'CUS';
         form.appendChild(typeInput);
-
-        const timeStart = document.getElementById('range-start').value;
-        const timeEnd = document.getElementById('range-end').value;
 
         const timeStartInput = document.createElement('input');
         timeStartInput.type = 'hidden';
         timeStartInput.name = 'time_start';
-        timeStartInput.value = timeStart;
+        timeStartInput.value = rangeStart.value;
         form.appendChild(timeStartInput);
 
         const timeEndInput = document.createElement('input');
         timeEndInput.type = 'hidden';
         timeEndInput.name = 'time_end';
-        timeEndInput.value = timeEnd;
+        timeEndInput.value = rangeEnd.value;
         form.appendChild(timeEndInput);
 
-        let selected = [];
-        if (selectedType === 'custom') {
-            selected = getCheckedCustomAppliances();
-        } else if (selectedType === 'optimized') {
-            selected = optimizedAppliances;
-        }
+        let selected = selectedType === 'custom' ? getCheckedCustomAppliances() : optimizedAppliances;
 
         if (selected.length === 0) {
             alert("⚠️ No appliances selected! Please select at least one appliance.");
@@ -383,20 +440,30 @@
 
         form.submit();
     };
-    
+
     const customForm = document.getElementById('customApplianceForm');
-    document.getElementById('confirmCustomBtn').onclick = function(e) {
+    document.getElementById('confirmCustomBtn').onclick = function (e) {
         e.preventDefault();
-        selectedType = 'custom';                 
-        updateSelectBtn();                         
+        selectedType = 'custom';
+        updateSelectBtn();
         document.getElementById('customPopup').style.display = 'none';
     };
+
     function getCheckedCustomAppliances() {
         if (!customForm.elements['selected_appliances']) return [];
         const checkboxes = customForm.elements['selected_appliances'];
         const cbArray = checkboxes.length ? Array.from(checkboxes) : [checkboxes];
         return cbArray.filter(cb => cb.checked).map(cb => cb.value);
     }
+
+    document.getElementById('selectAllCustom').onclick = function (e) {
+        e.preventDefault();
+        const form = document.getElementById('customApplianceForm');
+        const checkboxes = form.querySelectorAll('input[type="checkbox"][name="selected_appliances"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => { cb.checked = !allChecked; });
+    };
+
     updateSelectBtn();
     </script>
     <style>

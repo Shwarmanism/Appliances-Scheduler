@@ -61,12 +61,11 @@ class ScheduledApplianceUsage(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     appliance_id = db.Column(db.String(25), db.ForeignKey('appliances.appliances_id'), nullable=False)
 
-    start_hour = db.Column(db.Integer, nullable=False)       # 0–23
-    duration = db.Column(db.Integer, nullable=False)         # in hours
-    cost = db.Column(db.Float, nullable=False)               # ₱ value
-    energy_kwh = db.Column(db.Float, nullable=False)         # kWh
-    is_partial = db.Column(db.Boolean, default=False)        # if only partially scheduled
+    start_hour = db.Column(db.Integer, nullable=False) 
+    duration = db.Column(db.Integer, nullable=False)      
+    cost = db.Column(db.Float, nullable=False)          
+    energy_kwh = db.Column(db.Float, nullable=False)      
+    is_partial = db.Column(db.Boolean, default=False)      
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Optional: store raw list of hours as comma-separated string (e.g. "5,6,7,...")
     hours_used = db.Column(db.String(255))
+    selected_type = db.Column(db.String(3), nullable=False)
