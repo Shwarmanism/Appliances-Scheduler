@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="appliance-cost">
-                Cost: Php {{ "%.2f"|format((appliance.daily_energy or 0) * 12) }}
+                    Cost: <span class="peso-green">₱ {{ "%.2f"|format((appliance.daily_energy or 0) * 12) }}</span>
                 </div>
                     <button class="delete-appliance-btn"
                             onclick="deleteAppliance('{{ appliance.appliances_id }}')"

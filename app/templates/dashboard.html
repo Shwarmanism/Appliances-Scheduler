@@ -68,18 +68,53 @@
                     <div class="summary-card-bar"></div>
                     <div class="summary-content">
                         <div class="summary-title">Estimated Cost (Avg/Month)</div>
-                        <div class="summary-value">PHP {{ estimated_cost }}</div>
+                        <div class="summary-value summary-value-green">₱ {{ estimated_cost }}</div>
                     </div>
                 </div>
             </section>
 
             <section class="chart-section">
-                <div class="chart-placeholder glass shimmer">
-                    <div class="chart-placeholder-inner">
-                        <span class="chart-placeholder-title">Chart/Image Placeholder</span>
-                    </div>
+                <div class="slideshow glass">
+                    <span class="slideshow-vignette left"></span>
+                    <span class="slideshow-vignette right"></span>
+                    <button class="slideshow-arrow left" onclick="prevSlide()" aria-label="Previous slide">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="20,8 12,16 20,24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <img id="slideshow-img" src="{{ url_for('static', filename='dashboard_slides/tip1.jpg') }}" alt="Energy Tip" class="slideshow-image">
+                    <button class="slideshow-arrow right" onclick="nextSlide()" aria-label="Next slide">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="12,8 20,16 12,24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </div>
             </section>
+
+            <script>
+                // List of images
+                const slides = [
+                    { src: "{{ url_for('static', filename='dashboard_slides/tip1.jpg') }}" },
+                    { src: "{{ url_for('static', filename='dashboard_slides/tip2.jpg') }}" },
+                    { src: "{{ url_for('static', filename='dashboard_slides/tip3.jpg') }}" }
+                ];
+                let currentSlide = 0;
+                function showSlide(index) {
+                    const img = document.getElementById('slideshow-img');
+                    img.src = slides[index].src;
+                }
+                function prevSlide() {
+                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                    showSlide(currentSlide);
+                }
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                }
+                setInterval(() => {
+                    nextSlide();
+                }, 4000); // Change slide every 4 seconds
+            </script>
 
             <section class="dashboard-lower">
                 <div class="top-appliances glass">

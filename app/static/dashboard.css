@@ -315,6 +315,9 @@ body {
     letter-spacing: 1.5px;
     text-shadow: 0 2px 8px #fff3;
 }
+.summary-value-green {
+    color: #1db954;
+}
 
 .chart-section {
     margin-top: 18px;
@@ -471,4 +474,89 @@ body {
     color: #444;
     box-shadow: none;
     text-align: center;
+}
+
+.peso-green {
+    color: #1db954;
+    font-weight: 800;
+}
+
+/* --- Slideshow Styles --- */
+.slideshow {
+    width: 100%;
+    max-width: 900px;
+    height: 420px;
+    margin: 0 auto 2rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.12);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+.slideshow-vignette {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+}
+.slideshow-vignette.left {
+    left: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.38) 70%, rgba(0,0,0,0));
+}
+.slideshow-vignette.right {
+    right: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0.38) 70%, rgba(0,0,0,0));
+}
+.slideshow-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 18px;
+    display: block;
+}
+.slideshow-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.32);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    z-index: 3;
+    opacity: 0.65;
+    transition: background 0.2s, opacity 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.slideshow-arrow:hover {
+    background: rgba(0,0,0,0.55);
+    opacity: 1;
+    color: #ffdf00;
+}
+.slideshow-arrow.left {
+    left: 16px;
+}
+.slideshow-arrow.right {
+    right: 16px;
+}
+@media (max-width: 600px) {
+    .slideshow {
+        max-width: 100%;
+        height: 240px;
+    }
+    .slideshow-vignette {
+        width: 40px;
+    }
 } 
