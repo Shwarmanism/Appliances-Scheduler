@@ -1,0 +1,151 @@
+{% from '_icons.html' import icon, logo_mark %}
+{%- set nav = [
+    ('home.home_dashboard', 'Dashboard', 'home'),
+    ('appliances.appliances_display', 'Appliances', 'plug'),
+    ('optimizer.optimize_appliances', 'Optimization', 'target'),
+    ('scheduler.schedule', 'Scheduling', 'calendar'),
+    ('analytics.analytics_tab', 'Analytics', 'chart'),
+    ('access.settings', 'Settings', 'settings'),
+] -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f5f2">
+    <title>{% block title %}{% endblock %} · Volt Vortex</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="app">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+        <button type="button" class="icon-btn" id="navOpen" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">{{ icon('menu') }}</button>
+        <a href="{{ url_for('home.home_dashboard') }}" class="brand brand--compact">
+            <span class="brand-mark">{{ logo_mark("lm-top", 24) }}</span>
+            <span class="brand-name">Volt Vortex</span>
+        </a>
+    </header>
+
+    <div class="shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-head">
+                <a href="{{ url_for('home.home_dashboard') }}" class="brand">
+                    <span class="brand-mark">{{ logo_mark("lm-side", 28) }}</span>
+                    <span class="brand-name">Volt Vortex</span>
+                </a>
+                <button type="button" class="icon-btn sidebar-close" id="navClose" aria-label="Close navigation">{{ icon('x') }}</button>
+            </div>
+
+            <nav class="nav" aria-label="Main">
+                {% for endpoint, label, ic in nav %}
+                <a href="{{ url_for(endpoint) }}" class="nav-item{% if request.endpoint == endpoint %} is-active{% endif %}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>
+                    {{ icon(ic) }}<span>{{ label }}</span>
+                </a>
+                {% endfor %}
+            </nav>
+
+            <div class="sidebar-foot">
+                <div class="who">
+                    <span class="avatar" aria-hidden="true">{{ (current_user.fullname or current_user.username or '?')[:1] | upper }}</span>
+                    <span class="who-text">
+                        <span class="who-name">{{ current_user.fullname or current_user.username }}</span>
+                        <span class="who-mail">{{ current_user.email }}</span>
+                    </span>
+                </div>
+                <form action="{{ url_for('access.logout') }}" method="post">
+                    <button type="submit" class="icon-btn" aria-label="Log out" title="Log out">{{ icon('logout', 18) }}</button>
+                </form>
+            </div>
+        </aside>
+        <div class="scrim" id="scrim" hidden></div>
+
+        <main class="main" id="main" tabindex="-1">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-stack">
+                {% for category, message in messages %}
+                <div class="alert alert--{{ 'danger' if category in ('danger', 'error') else category if category in ('success', 'warning') else 'info' }}" role="status">
+                    {{ icon('alert' if category in ('danger', 'error', 'warning') else 'check' if category == 'success' else 'info', 18) }}
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    {% block modals %}{% endblock %}
+
+    <script>
+    (function () {
+        var sb = document.getElementById('sidebar'), scrim = document.getElementById('scrim'),
+            openBtn = document.getElementById('navOpen'), closeBtn = document.getElementById('navClose');
+        function setNav(open) {
+            document.body.classList.toggle('nav-open', open);
+            scrim.hidden = !open;
+            openBtn.setAttribute('aria-expanded', String(open));
+            if (open) closeBtn.focus();
+        }
+        openBtn.addEventListener('click', function () { setNav(true); });
+        closeBtn.addEventListener('click', function () { setNav(false); openBtn.focus(); });
+        scrim.addEventListener('click', function () { setNav(false); });
+
+        /* Shared modal helpers: any element with class "modal" */
+        window.openModal = function (id) {
+            var m = document.getElementById(id);
+            if (!m) return;
+            m.classList.add('is-open');
+            m.removeAttribute('hidden');
+            m.style.display = '';
+            var f = m.querySelector('[autofocus], input:not([type=hidden]):not([readonly]), select, button:not(.modal-x)');
+            if (f) setTimeout(function () { f.focus(); }, 30);
+        };
+        window.closeModal = function (id) {
+            var m = typeof id === 'string' ? document.getElementById(id) : id;
+            if (!m) return;
+            m.classList.remove('is-open');
+            m.style.display = '';
+        };
+        document.addEventListener('click', function (e) {
+            if (e.target.classList && e.target.classList.contains('modal')) closeModal(e.target);
+            var x = e.target.closest && e.target.closest('[data-close]');
+            if (x) closeModal(x.closest('.modal'));
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape') return;
+            document.querySelectorAll('.modal.is-open').forEach(closeModal);
+            if (document.body.classList.contains('nav-open')) setNav(false);
+        });
+
+        var toastTimer;
+        window.showToast = function (msg, kind) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast toast--' + (kind || 'info');
+            t.hidden = false;
+            requestAnimationFrame(function () { t.classList.add('is-in'); });
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                t.classList.remove('is-in');
+                setTimeout(function () { t.hidden = true; }, 220);
+            }, 2600);
+        };
+
+        document.querySelectorAll('.flash-stack .alert').forEach(function (a) {
+            setTimeout(function () { a.classList.add('is-out'); }, 5000);
+        });
+    })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

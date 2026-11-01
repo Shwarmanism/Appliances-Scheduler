@@ -1,401 +1,212 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics | Volt Vortex</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/dashboard.css">
-    <link rel="stylesheet" href="../static/analytics.css">
-    <link rel="stylesheet" href="../static/appliances.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <input type="checkbox" id="sidebar-toggle" hidden>
-    <div class="dashboard-container">
-        <aside class="sidebar glass">
-            <div class="sidebar-top">
-                <label for="sidebar-toggle" class="sidebar-hamburger-btn" aria-label="Toggle sidebar">
-                    <svg class="hamburger-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
-                        <rect y="7" width="32" height="3" rx="1.5" fill="#ffdf00" />
-                        <rect y="14.5" width="32" height="3" rx="1.5" fill="#ffdf00" />
-                        <rect y="22" width="32" height="3" rx="1.5" fill="#ffdf00" />
-                    </svg>
-                </label>
-                <div class="sidebar-logo-block">
-                    <div class="sidebar-logo new-logo">⚡</div>
-                    <div class="sidebar-title">VOLT VORTEX</div>
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='analytics.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+{#- Placeholder figures: analytics_routes does not yet feed real data to this page. -#}
+{% set breakdown = [('Air Conditioner', 35), ('Water Heater', 25), ('Refrigerator', 20), ('Laptop', 10), ('Fan', 10)] %}
+<div class="page-head">
+    <div>
+        <h1>Analytics</h1>
+        <p class="lede">Where your energy goes, how it changes through the week, and what scheduling saves you.</p>
+    </div>
+</div>
+
+<div class="alert alert--info" style="margin-bottom:20px">
+    {{ icon('info', 18) }}
+    <span>These charts show sample figures for now. They'll switch to your own appliance data once analytics is connected.</span>
+</div>
+
+<section class="stats" aria-label="Overview">
+    <div class="stat">
+        <div class="stat-label">Appliances tracked</div>
+        <div class="stat-value">12</div>
+    </div>
+    <div class="stat">
+        <div class="stat-label">Daily consumption</div>
+        <div class="stat-value">34.2<small>kWh</small></div>
+    </div>
+    <div class="stat">
+        <div class="stat-label">Monthly cost</div>
+        <div class="stat-value">₱1,200</div>
+    </div>
+</section>
+
+<div class="grid an-grid">
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2 class="panel-title">Usage by appliance</h2>
+                <p class="panel-sub">Share of total consumption</p>
+            </div>
+        </div>
+        <ul class="bars">
+            {% for name, pct in breakdown %}
+            <li class="bars-item">
+                <div class="bars-row"><span class="bars-name">{{ name }}</span><span class="bars-val num">{{ pct }}%</span></div>
+                <div class="bars-track"><span style="width: {{ pct / breakdown[0][1] * 100 }}%"></span></div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head panel-head--wrap">
+            <div>
+                <h2 class="panel-title">Usage over time</h2>
+                <p class="panel-sub" id="lineSub">kWh per day, this week</p>
+            </div>
+            <div class="filters">
+                <select class="select select--sm" id="applianceFilter" aria-label="Appliance">
+                    <option value="all">All appliances</option>
+                    <option value="aircon">Air Conditioner</option>
+                    <option value="waterheater">Water Heater</option>
+                    <option value="refrigerator">Refrigerator</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="fan">Fan</option>
+                </select>
+                <div class="seg seg--sm" role="radiogroup" aria-label="View">
+                    <label class="seg-item"><input type="radio" name="viewType" value="daily" checked><span>Week</span></label>
+                    <label class="seg-item"><input type="radio" name="viewType" value="monthly"><span>Year</span></label>
                 </div>
             </div>
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-link">
-                    <span class="icon"><img src="{{ url_for('static', filename='Home.svg') }}" alt="Dashboard" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="/appliances" class="nav-link">
-                    <span class="icon"><img src="{{ url_for('static', filename='Appliances.svg') }}" alt="Appliances" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Appliances</span>
-                </a>
-                <a href="{{ url_for('optimizer.optimize_appliances') }}" class="nav-link">
-                    <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Optimization" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Optimization</span>
-                </a>
-                <a href="/scheduling" class="nav-link">
-                    <span class="icon"><img src="{{ url_for('static', filename='Report.svg') }}" alt="Scheduling" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Scheduling</span>
-                </a>
-                <a href="/analytics" class="nav-link active" aria-current="page">
-                    <span class="icon"><img src="{{ url_for('static', filename='Analytics.svg') }}" alt="Analytics" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Analytics</span>
-                </a>
-                <a href="/settings" class="nav-link">
-                    <span class="icon"><img src="{{ url_for('static', filename='Profile.svg') }}" alt="Settings" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Settings</span>
-                </a>
-            </nav>
-        </aside>
-        <main class="main-content gradient-bg">
-            <div class="appliances-title">Analytics Overview</div>
-            <section class="greeting" style="display:none;">
-                <h1><span class="gradient-text">Analytics Overview</span></h1>
-            </section>
+        </div>
+        <div class="chart-box"><canvas id="lineChart" aria-label="Energy use over time" role="img"></canvas></div>
+    </section>
 
-            <section class="analytics-cards">
-                <div class="analytics-card glass">
-                    <div class="analytics-card-bar"></div>
-                    <div class="analytics-content">
-                        <div class="analytics-title">Total Appliances Tracked</div>
-                        <div class="analytics-value">12</div>
-                    </div>
-                </div>
-                <div class="analytics-card glass">
-                    <div class="analytics-card-bar"></div>
-                    <div class="analytics-content">
-                        <div class="analytics-title">Total Estimated Daily Consumption</div>
-                        <div class="analytics-value">34.2 kWh</div>
-                    </div>
-                </div>
-                <div class="analytics-card glass">
-                    <div class="analytics-card-bar"></div>
-                    <div class="analytics-content">
-                        <div class="analytics-title">Total Estimated Monthly Cost</div>
-                        <div class="analytics-value peso-green">₱ 1,200</div>
-                    </div>
-                </div>
-            </section>
+    <section class="panel">
+        <h2 class="panel-title">Highlights</h2>
+        <dl class="facts">
+            <div class="fact">
+                <span class="fact-icon">{{ icon('chart', 18) }}</span>
+                <dt>High-consumption days</dt>
+                <dd>June 5, June 12</dd>
+            </div>
+            <div class="fact">
+                <span class="fact-icon fact-icon--good">{{ icon('check', 18) }}</span>
+                <dt>Best saving day</dt>
+                <dd>June 10</dd>
+            </div>
+            <div class="fact">
+                <span class="fact-icon fact-icon--warn">{{ icon('alert', 18) }}</span>
+                <dt>Overused appliances</dt>
+                <dd class="tags-inline"><span class="badge badge--high">Air Conditioner · 8h</span><span class="badge badge--mid">Water Heater · 3h</span></dd>
+            </div>
+        </dl>
+    </section>
 
-            <section class="analytics-charts">
-                <div class="analytics-chart glass">
-                    <div class="chart-title">Appliance Usage Breakdown</div>
-                    <canvas id="pieChart"></canvas>
-                </div>
-                <div class="analytics-chart glass">
-                    <div class="chart-title">Time-based Usage</div>
-                    <canvas id="lineChart" width="350" height="220"></canvas>
-                    <div class="chart-filters" style="display:flex; gap:16px; align-items:center; margin-bottom:10px;">
-                        <label for="applianceFilter" style="font-weight:600; color:#444;">Appliance:</label>
-                        <select id="applianceFilter" style="padding:6px 12px; border-radius:8px; border:1.5px solid #e0e0e0; font-size:1rem;">
-                            <option value="all">All</option>
-                            <option value="aircon">Air Conditioner</option>
-                            <option value="waterheater">Water Heater</option>
-                            <option value="refrigerator">Refrigerator</option>
-                            <option value="laptop">Laptop</option>
-                            <option value="fan">Fan</option>
-                        </select>
-                        <label for="viewTypeFilter" style="font-weight:600; color:#444;">View:</label>
-                        <select id="viewTypeFilter" style="padding:6px 12px; border-radius:8px; border:1.5px solid #e0e0e0; font-size:1rem;">
-                            <option value="daily">Daily</option>
-                            <option value="monthly">Monthly</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2 class="panel-title">Savings this month</h2>
+                <p class="panel-sub">Cumulative ₱ saved, by week</p>
+            </div>
+            <div class="stat-value is-good num" style="font-size:1.5rem;margin:0">₱45</div>
+        </div>
+        <div class="chart-box"><canvas id="savingsChart" aria-label="Savings by week" role="img"></canvas></div>
+        <div class="legend-row">
+            <span><i class="key key--accent"></i>With optimization &amp; scheduling</span>
+            <span><i class="key key--dash"></i>Without</span>
+        </div>
+    </section>
+</div>
+{% endblock %}
 
-            <section class="analytics-highlights">
-                <div class="highlight-card glass">
-                    <div class="highlight-title">Highlights & Trends</div>
-                    <div class="trends-grid">
-                        <div class="trend-item">
-                            <div class="trend-icon">📈</div>
-                            <div class="trend-label">High Consumption Days</div>
-                            <div class="trend-value">June 5, June 12</div>
-                        </div>
-                        <div class="trend-item">
-                            <div class="trend-icon">💡</div>
-                            <div class="trend-label">Best Saving Day</div>
-                            <div class="trend-value">June 10</div>
-                        </div>
-                        <div class="trend-item trend-item-wide">
-                            <div class="trend-icon">⚡</div>
-                            <div class="trend-label">Overused Appliances</div>
-                            <ul class="overused-list">
-                                <li>Air Conditioner <span class="device-duration">- 8h</span></li>
-                                <li>Water Heater <span class="device-duration">- 3h</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="savings-card glass">
-                    <div class="savings-title">Savings Chart</div>
-                    <div class="savings-total-green">Total saved this month: ₱ 45</div>
-                    <canvas id="savingsChart" width="600" height="220" style="margin-bottom:10px;"></canvas>
-                </div>
-            </section>
-        </main>
-    </div>
-    <script>
-    // Appliance Usage Breakdown (Pie Chart)
-    const pieCtx = document.getElementById('pieChart').getContext('2d');
-    new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Air Conditioner', 'Water Heater', 'Refrigerator', 'Laptop', 'Fan'],
-            datasets: [{
-                data: [35, 25, 20, 10, 10],
-                backgroundColor: [
-                    'rgba(242,86,34,0.92)',
-                    'rgba(255,223,0,0.92)',
-                    'rgba(0,184,107,0.92)',
-                    'rgba(34,123,230,0.92)',
-                    'rgba(110,110,110,0.92)'
-                ],
-                borderColor: '#fff',
-                borderWidth: 4,
-                hoverOffset: 16,
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { position: 'bottom', labels: { font: { size: 15 } } },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed + '%';
-                        }
-                    },
-                    backgroundColor: '#fff',
-                    titleColor: '#f25622',
-                    bodyColor: '#222',
-                    borderColor: '#f25622',
-                    borderWidth: 1.5,
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false
-                }
-            },
-            animation: {
-                animateRotate: true,
-                animateScale: true,
-                duration: 1200,
-                easing: 'easeOutQuart'
-            }
-        }
-    });
-
-    // Time-based Usage (Line Chart) with filter logic and enhancements
-    const lineCtx = document.getElementById('lineChart').getContext('2d');
-    const applianceData = {
-        all: {
-            daily: [12, 15, 10, 18, 14, 20, 16],
-            monthly: [320, 340, 310, 380, 350, 400, 370, 390, 410, 420, 430, 440],
-        },
-        aircon: {
-            daily: [5, 7, 4, 8, 6, 9, 7],
-            monthly: [120, 130, 110, 140, 135, 150, 145, 148, 152, 160, 165, 170],
-        },
-        waterheater: {
-            daily: [2, 3, 2, 4, 3, 5, 4],
-            monthly: [50, 55, 52, 60, 58, 65, 62, 64, 66, 68, 70, 72],
-        },
-        refrigerator: {
-            daily: [1, 1, 1, 1, 1, 1, 1],
-            monthly: [30, 31, 30, 32, 31, 33, 32, 33, 34, 35, 36, 36],
-        },
-        laptop: {
-            daily: [2, 2, 1, 2, 2, 2, 2],
-            monthly: [40, 42, 41, 43, 42, 44, 43, 44, 45, 46, 47, 48],
-        },
-        fan: {
-            daily: [2, 2, 2, 3, 2, 3, 2],
-            monthly: [40, 45, 42, 50, 48, 55, 52, 54, 56, 58, 60, 62],
-        }
+{% block scripts %}
+<script>
+    const css = getComputedStyle(document.documentElement);
+    const C = {
+        accent: css.getPropertyValue('--accent').trim(),
+        text2: css.getPropertyValue('--text-2').trim(),
+        text3: css.getPropertyValue('--text-3').trim(),
+        border: css.getPropertyValue('--border').trim(),
+        ink: css.getPropertyValue('--ink').trim(),
+        neutral: '#8a8278'
     };
-    const dailyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    let currentAppliance = 'all';
-    let currentView = 'daily';
-    // Gradient for line chart
-    function getLineGradient(ctx, color) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-        gradient.addColorStop(0, 'rgba(242,86,34,0.32)'); // Strong orange at top
-        gradient.addColorStop(0.7, 'rgba(242,86,34,0.12)'); // Lighter orange in the middle
-        gradient.addColorStop(1, 'rgba(242,86,34,0.01)'); // Transparent at bottom
-        return gradient;
+    Chart.defaults.font.family = css.getPropertyValue('--font');
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = C.text3;
+
+    const tooltip = {
+        backgroundColor: C.ink, titleColor: '#fff', bodyColor: '#f4efe8',
+        padding: 10, cornerRadius: 8, displayColors: false,
+        titleFont: { weight: '700' }, bodyFont: { weight: '600' }
+    };
+    const scales = (yTitle) => ({
+        y: { beginAtZero: true, border: { display: false }, grid: { color: C.border }, ticks: { padding: 8, maxTicksLimit: 5 },
+             title: { display: true, text: yTitle, color: C.text3 } },
+        x: { border: { color: C.border }, grid: { display: false }, ticks: { padding: 6 } }
+    });
+    const interaction = { mode: 'index', intersect: false };
+
+    /* ---- Usage over time ---- */
+    const applianceData = {
+        all:          { daily: [12, 15, 10, 18, 14, 20, 16], monthly: [320, 340, 310, 380, 350, 400, 370, 390, 410, 420, 430, 440] },
+        aircon:       { daily: [5, 7, 4, 8, 6, 9, 7],        monthly: [120, 130, 110, 140, 135, 150, 145, 148, 152, 160, 165, 170] },
+        waterheater:  { daily: [2, 3, 2, 4, 3, 5, 4],        monthly: [50, 55, 52, 60, 58, 65, 62, 64, 66, 68, 70, 72] },
+        refrigerator: { daily: [1, 1, 1, 1, 1, 1, 1],        monthly: [30, 31, 30, 32, 31, 33, 32, 33, 34, 35, 36, 36] },
+        laptop:       { daily: [2, 2, 1, 2, 2, 2, 2],        monthly: [40, 42, 41, 43, 42, 44, 43, 44, 45, 46, 47, 48] },
+        fan:          { daily: [2, 2, 2, 3, 2, 3, 2],        monthly: [40, 45, 42, 50, 48, 55, 52, 54, 56, 58, 60, 62] }
+    };
+    const labels = {
+        daily: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        monthly: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    };
+    let currentAppliance = 'all', currentView = 'daily';
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    function fill(ctx, rgb) {
+        const g = ctx.createLinearGradient(0, 0, 0, 240);
+        g.addColorStop(0, `rgba(${rgb}, .16)`);
+        g.addColorStop(1, `rgba(${rgb}, 0)`);
+        return g;
     }
-    let lineChart = new Chart(lineCtx, {
+    const lineChart = new Chart(lineCtx, {
         type: 'line',
-        data: {
-            labels: dailyLabels,
-            datasets: [{
-                label: 'kWh Used',
-                data: applianceData['all']['daily'],
-                borderColor: '#f25622',
-                backgroundColor: getLineGradient(lineCtx, 'rgba(242,86,34,1)'),
-                tension: 0.4,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#f25622',
-                pointRadius: 7,
-                pointHoverRadius: 10,
-                pointBorderWidth: 3,
-                fill: true
-            }]
-        },
+        data: { labels: labels.daily, datasets: [{
+            label: 'kWh used', data: applianceData.all.daily,
+            borderColor: C.accent, backgroundColor: fill(lineCtx, '217, 72, 15'), fill: true,
+            borderWidth: 2, tension: 0.35, pointRadius: 0, pointHoverRadius: 5,
+            pointHoverBackgroundColor: C.accent, pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2
+        }]},
         options: {
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return 'kWh Used: ' + context.parsed.y;
-                        }
-                    },
-                    backgroundColor: '#fff',
-                    titleColor: '#f25622',
-                    bodyColor: '#222',
-                    borderColor: '#f25622',
-                    borderWidth: 1.5,
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false
-                }
-            },
-            elements: {
-                line: {
-                    borderWidth: 4,
-                },
-                point: {
-                    borderWidth: 3,
-                    radius: 7,
-                    hoverRadius: 10,
-                    backgroundColor: '#fff',
-                }
-            },
-            animation: {
-                duration: 1200,
-                easing: 'easeOutQuart'
-            },
-            scales: {
-                y: { beginAtZero: true, title: { display: true, text: 'kWh' }, grid: { color: '#eee' } },
-                x: { title: { display: true, text: currentView === 'daily' ? 'Day' : 'Month' }, grid: { color: '#f7f7f7' } }
-            }
+            maintainAspectRatio: false, interaction,
+            plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => `${c.parsed.y} kWh` } } },
+            scales: scales('kWh')
         }
     });
-
-    document.getElementById('applianceFilter').addEventListener('change', function() {
-        currentAppliance = this.value;
-        updateLineChart();
-    });
-    document.getElementById('viewTypeFilter').addEventListener('change', function() {
-        currentView = this.value;
-        updateLineChart();
-    });
-
     function updateLineChart() {
-        const labels = currentView === 'daily' ? dailyLabels : monthlyLabels;
-        lineChart.data.labels = labels;
+        lineChart.data.labels = labels[currentView];
         lineChart.data.datasets[0].data = applianceData[currentAppliance][currentView];
-        lineChart.options.scales.x.title.text = currentView === 'daily' ? 'Day' : 'Month';
-        lineChart.data.datasets[0].backgroundColor = getLineGradient(lineCtx, 'rgba(242,86,34,1)');
         lineChart.update();
+        document.getElementById('lineSub').textContent = currentView === 'daily' ? 'kWh per day, this week' : 'kWh per month, this year';
     }
+    document.getElementById('applianceFilter').addEventListener('change', function () { currentAppliance = this.value; updateLineChart(); });
+    document.querySelectorAll('input[name="viewType"]').forEach(r => r.addEventListener('change', () => { currentView = r.value; updateLineChart(); }));
 
-    // Savings (Line Chart with two datasets: Total Savings and Normal)
+    /* ---- Savings ---- */
     const savingsCtx = document.getElementById('savingsChart').getContext('2d');
-    const savingsTotal = [7, 18, 28, 45]; // Example: total savings with optimization and scheduling
-    const savingsNormal = [2, 6, 10, 15]; // Example: normal savings without optimization/scheduling
-    
-    const greenGradient = savingsCtx.createLinearGradient(0, 0, 0, 220);
-    greenGradient.addColorStop(0, 'rgba(0,184,107,0.18)');
-    greenGradient.addColorStop(1, 'rgba(0,184,107,0.01)');
-    const grayGradient = savingsCtx.createLinearGradient(0, 0, 0, 220);
-    grayGradient.addColorStop(0, 'rgba(110,110,110,0.22)');
-    grayGradient.addColorStop(1, 'rgba(110,110,110,0.01)');
     new Chart(savingsCtx, {
         type: 'line',
         data: {
             labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
             datasets: [
-                {
-                    label: 'Without Optimization/Scheduling',
-                    data: savingsNormal,
-                    borderColor: '#6e6e6e',
-                    backgroundColor: grayGradient,
-                    tension: 0.4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#6e6e6e',
-                    pointRadius: 7,
-                    pointHoverRadius: 10,
-                    pointBorderWidth: 3,
-                    fill: true,
-                    borderDash: [6, 4],
-                    order: 2
-                },
-                {
-                    label: 'Total Savings',
-                    data: savingsTotal,
-                    borderColor: '#00b86b',
-                    backgroundColor: greenGradient,
-                    tension: 0.4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#00b86b',
-                    pointRadius: 7,
-                    pointHoverRadius: 10,
-                    pointBorderWidth: 3,
-                    fill: true,
-                    order: 1
-                }
+                { label: 'With optimization & scheduling', data: [7, 18, 28, 45], borderColor: C.accent,
+                  backgroundColor: fill(savingsCtx, '217, 72, 15'), fill: true, borderWidth: 2, tension: 0.3,
+                  pointRadius: 4, pointBackgroundColor: C.accent, pointBorderColor: '#fff', pointBorderWidth: 2, pointHoverRadius: 6 },
+                { label: 'Without', data: [2, 6, 10, 15], borderColor: C.neutral, borderDash: [5, 4],
+                  borderWidth: 2, tension: 0.3, fill: false,
+                  pointRadius: 4, pointBackgroundColor: C.neutral, pointBorderColor: '#fff', pointBorderWidth: 2, pointHoverRadius: 6 }
             ]
         },
         options: {
-            plugins: {
-                legend: { position: 'bottom', labels: { font: { size: 15 } } },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ₱ ' + context.parsed.y.toLocaleString();
-                        }
-                    },
-                    backgroundColor: '#fff',
-                    titleColor: '#00b86b',
-                    bodyColor: '#222',
-                    borderColor: '#00b86b',
-                    borderWidth: 1.5,
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false
-                }
-            },
-            elements: {
-                line: {
-                    borderWidth: 4,
-                },
-                point: {
-                    borderWidth: 3,
-                    radius: 7,
-                    hoverRadius: 10,
-                    backgroundColor: '#fff',
-                }
-            },
-            animation: {
-                duration: 1200,
-                easing: 'easeOutQuart'
-            },
-            scales: {
-                y: { beginAtZero: true, title: { display: true, text: 'PHP Saved' }, grid: { color: '#eee' } },
-                x: { title: { display: true, text: 'Week' }, grid: { color: '#f7f7f7' } }
-            }
+            maintainAspectRatio: false, interaction,
+            plugins: { legend: { display: false }, tooltip: { ...tooltip, displayColors: true, boxPadding: 4,
+                callbacks: { label: c => ` ${c.dataset.label}: ₱${c.parsed.y}` } } },
+            scales: scales('₱ saved')
         }
     });
-    </script>
-</body>
-</html> 
+</script>
+{% endblock %}

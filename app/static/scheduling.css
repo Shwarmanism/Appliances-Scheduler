@@ -1,501 +1,76 @@
-/* Scheduling Tab Styles */
-.scheduling-main {
-    padding: 56px 12vw 56px 7vw;
-    background: #f7f7f7;
-    border-radius: 32px 0 0 0;
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    margin-left: 240px;
-    width: calc(100% - 240px);
-    transition: margin-left 0.3s cubic-bezier(.4,2,.6,1), width 0.3s cubic-bezier(.4,2,.6,1);
+/* Scheduling */
+.sched-top { margin-bottom: 20px; align-items: start; }
+.fieldset { border: 0; margin: 18px 0 0; padding: 0; min-width: 0; }
+.fieldset legend { padding: 0; margin-bottom: 8px; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: var(--r-md); background: var(--surface-2); }
+.seg-item { position: relative; cursor: pointer; }
+.seg-item input { position: absolute; opacity: 0; pointer-events: none; }
+.seg-item span {
+    display: grid; place-items: center; height: 36px; padding: 0 10px; border-radius: 8px;
+    font-weight: 700; font-size: var(--fs-sm); color: var(--text-2); text-align: center;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.seg-item:hover span { color: var(--text); }
+.seg-item input:checked + span { background: var(--surface); color: var(--text); box-shadow: var(--shadow-lift); }
+.seg-item input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.pane { margin-top: 12px; padding: 14px; border: 1px dashed var(--border-strong); border-radius: var(--r-md); }
+.pane-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pane-empty { font-size: var(--fs-sm); color: var(--text-2); }
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { padding: 5px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; font-size: var(--fs-sm); }
+.checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px; }
+.check {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer;
+    font-weight: 600; font-size: var(--fs-sm); border: 1px solid var(--border);
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.check:hover { background: var(--surface-2); }
+.check:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+
+.range-row { display: flex; align-items: center; gap: 10px; }
+.range-row .select { flex: 1; }
+
+/* 24-hour strip */
+.day { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; margin-top: 12px; }
+.day-h { height: 22px; border-radius: 3px; background: var(--surface-2); position: relative; }
+.day-h.peak { background: #f6e3d9; }
+.day-h.off { background: #e5ebf3; }
+.day-h.on.peak { background: var(--accent); }
+.day-h.on.off { background: #3b6fc4; }
+.day-axis { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--text-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+#windowText { margin-top: 8px; }
+
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+.swatch--peak { background: var(--accent); }
+.swatch--off { background: #3b6fc4; }
+.rates-table td:nth-child(2) { color: var(--text-2); }
+
+/* Results */
+.stats--inline { margin-bottom: 18px; background: var(--surface-2); border-color: transparent; }
+.stats--inline .stat + .stat { border-color: var(--border); }
+.stats--inline .stat-value { font-size: 1.5rem; }
+.gantt { display: flex; flex-direction: column; }
+.gantt-row {
+    display: grid; grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) 72px; align-items: center; gap: 16px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.gantt-row:last-child { border-bottom: 0; }
+.gantt-axis { padding: 0 0 4px; border-bottom: 0; }
+.gantt-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-3); font-weight: 600; }
+.gantt-label { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+.gantt-name { font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gantt-time { font-size: var(--fs-sm); color: var(--text-2); }
+.day--gantt { margin-top: 0; }
+.day--gantt .day-h { height: 26px; }
+.gantt-cost { text-align: right; font-weight: 800; }
+
+.spinner--sm { width: 16px; height: 16px; border-width: 2px; border-color: rgba(255, 255, 255, .35); border-top-color: #fff; }
+
+@media (max-width: 760px) {
+    .gantt-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+    .gantt-row .day--gantt { grid-column: 1 / -1; grid-row: 2; }
+    .gantt-axis { display: none; }
+    .seg { grid-template-columns: 1fr; }
 }
-#sidebar-toggle:checked ~ .dashboard-container .scheduling-main {
-    margin-left: 80px;
-    width: calc(100% - 80px);
-}
-@media (max-width: 900px) {
-    .scheduling-main {
-        margin-left: 80px;
-        width: calc(100% - 80px);
-    }
-}
-.scheduling-desc {
-    font-size: 1.08rem;
-    color: #444;
-    background: #fffbe6;
-    border-left: 5px solid #ffd600;
-    border-radius: 10px;
-    padding: 18px 28px;
-    margin-bottom: 18px;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(255,223,0,0.07);
-}
-.scheduling-cards-row {
-    display: flex;
-    gap: 32px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-}
-.scheduling-rate-card, .scheduling-options-card {
-    flex: 1 1 340px;
-    min-width: 320px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 24px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    border: 1.5px solid #e0e0e0;
-}
-.scheduling-rate-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #f25622;
-    margin-bottom: 10px;
-}
-.scheduling-hourly-rates {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 1.01rem;
-    color: #333;
-}
-.hour-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px 24px;
-    margin-bottom: 2px;
-    align-items: center;
-}
-.hour-row span {
-    min-width: 90px;
-    display: inline-block;
-    font-weight: 600;
-    color: #222;
-}
-.scheduling-options-card label {
-    font-weight: 600;
-    color: #222;
-}
-.scheduling-options-card select {
-    margin-top: 6px;
-    margin-bottom: 6px;
-}
-.schedule-result-section {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 32px 32px 24px 32px;
-    border: 1.5px solid #e0e0e0;
-    margin-top: 18px;
-    min-height: 120px;
-}
-/* Modal Styles (reuse from appliances.css) */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
-    padding: 32px 36px 28px 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: relative;
-    min-width: 320px;
-    max-width: 95vw;
-    align-items: flex-start;
-}
-.modal-close-btn {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 1.7rem;
-    color: #f25622;
-    cursor: pointer;
-    font-weight: 700;
-}
-.modal-content h2 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #f25622;
-    margin-bottom: 8px;
-}
-.submit-btn, .add-appliance-btn {
-    background: #f25622;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 1.08rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    margin-top: 8px;
-}
-.submit-btn:hover, .add-appliance-btn:hover {
-    background: #ffdf00;
-    color: #f25622;
-}
-@media (max-width: 1200px) {
-    .scheduling-main { max-width: 100%; }
-    .scheduling-rate-card, .scheduling-options-card { padding: 18px 10px; }
-}
-@media (max-width: 900px) {
-    .scheduling-cards-row { flex-direction: column; gap: 18px; }
-}
-@media (max-width: 700px) {
-    .scheduling-main { padding: 24px 2vw 24px 2vw; }
-    .scheduling-rate-card, .scheduling-options-card, .schedule-result-section { padding: 12px 4vw; }
-    .modal-content { padding: 18px 8px; }
-}
-.scheduling-rate-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 8px;
-    font-size: 1.05rem;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px 0 rgba(242,86,34,0.22), 0 4px 24px 0 rgba(255,223,0,0.13);
-}
-.scheduling-rate-table th, .scheduling-rate-table td {
-    padding: 14px 18px;
-    text-align: left;
-}
-.scheduling-rate-table th {
-    background: #f25622;
-    color: #fff;
-    font-weight: 800;
-    border-bottom: 2.5px solid #ffdf00;
-    letter-spacing: 0.5px;
-}
-.scheduling-rate-table td {
-    background: #fffbe6;
-    color: #222;
-    border-bottom: 1.5px solid #ffe082;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-.scheduling-rate-table tr:nth-child(even) td {
-    background: #fff;
-}
-.scheduling-rate-table tr:last-child td {
-    border-bottom: none;
-}
-.scheduling-rate-table tbody tr:hover td {
-    background: #ffdf00;
-    color: #f25622;
-}
-@media (max-width: 700px) {
-    .scheduling-rate-table th, .scheduling-rate-table td {
-        padding: 10px 6px;
-        font-size: 0.98rem;
-    }
-}
-.optimized-btn, .custom-btn {
-    background: #227be6 !important;
-    color: #fff !important;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 1.08rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    margin-top: 8px;
-}
-.optimized-btn:hover, .optimized-btn:focus, .custom-btn:hover, .custom-btn:focus {
-    background: #ffdf00 !important;
-    color: #227be6 !important;
-}
-.schedule-summary-bar {
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    background: #fffbe6;
-    border-radius: 10px;
-    padding: 18px 0 12px 0;
-    margin-bottom: 18px;
-    box-shadow: 0 2px 8px rgba(255,223,0,0.08);
-}
-.summary-item {
-    font-size: 1.13rem;
-    font-weight: 700;
-    color: #f25622;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.summary-label {
-    color: #888;
-    font-weight: 600;
-    font-size: 1.05rem;
-}
-.summary-value {
-    color: #00b86b;
-    font-weight: 800;
-    font-size: 1.18rem;
-}
-.schedule-cards-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 22px;
-    justify-content: flex-start;
-}
-.schedule-appliance-card {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(34,123,230,0.10), 0 1.5px 8px rgba(242,86,34,0.08);
-    padding: 22px 28px 18px 28px;
-    min-width: 210px;
-    max-width: 260px;
-    flex: 1 1 210px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    border-left: 6px solid #f25622;
-    border-top: 2.5px solid #ffdf00;
-    margin-bottom: 8px;
-    transition: box-shadow 0.2s, border-color 0.2s;
-}
-.schedule-appliance-card:hover {
-    box-shadow: 0 6px 24px rgba(34,123,230,0.18), 0 2.5px 12px rgba(242,86,34,0.13);
-    border-left: 6px solid #227be6;
-}
-.appliance-title {
-    font-size: 1.13rem;
-    font-weight: 800;
-    color: #227be6;
-    margin-bottom: 6px;
-}
-.appliance-time {
-    font-size: 1.01rem;
-    color: #888;
-    margin-bottom: 4px;
-    font-weight: 600;
-}
-.appliance-cost {
-    font-size: 1.08rem;
-    color: #00b86b;
-    font-weight: 700;
-    margin-top: 2px;
-}
-@media (max-width: 900px) {
-    .schedule-cards-row {
-        flex-direction: column;
-        gap: 14px;
-    }
-    .schedule-appliance-card {
-        max-width: 100%;
-        min-width: 0;
-        width: 100%;
-    }
-    .schedule-summary-bar {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
-        padding: 12px 10px;
-    }
-}
-.schedule-section-title {
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #f25622;
-    text-align: center;
-    margin-bottom: 18px;
-    letter-spacing: 1px;
-}
-.custom-appliance-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px 24px;
-    margin-bottom: 10px;
-    width: 100%;
-}
-.custom-appliance-grid label {
-    background: #f7f7f7;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 1.01rem;
-    font-weight: 600;
-    color: #222;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: 1.5px solid #e0e0e0;
-    transition: background 0.18s, border 0.18s;
-    word-break: break-word;
-}
-.custom-appliance-grid label:hover, .custom-appliance-grid label:focus-within {
-    background: #e3f0ff;
-    border: 1.5px solid #227be6;
-}
-.custom-appliance-grid input[type="checkbox"] {
-    accent-color: #227be6;
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    margin-right: 8px;
-}
-#selectAllCustom.custom-btn {
-    background: #227be6;
-    color: #fff;
-    border: none;
-    font-size: 0.98rem;
-    font-weight: 700;
-    border-radius: 6px;
-    padding: 4px 16px;
-    transition: background 0.2s, color 0.2s;
-}
-#selectAllCustom.custom-btn:hover, #selectAllCustom.custom-btn:focus {
-    background: #ffdf00;
-    color: #227be6;
-}
-@media (max-width: 600px) {
-    .custom-appliance-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-}
-.optimized-appliance-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px 24px;
-    margin-bottom: 10px;
-    width: 100%;
-}
-.optimized-appliance-card {
-    background: #f7f7f7;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 1.01rem;
-    font-weight: 700;
-    color: #222;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1.5px solid #e0e0e0;
-    transition: background 0.18s, border 0.18s;
-}
-.optimized-appliance-card:hover, .optimized-appliance-card:focus-within {
-    background: #e3f0ff;
-    border: 1.5px solid #227be6;
-}
-.appliance-dot {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    margin-right: 6px;
-    border: 2px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-@media (max-width: 600px) {
-    .optimized-appliance-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-}
-.selected-appliance-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 10px 18px;
-    margin: 12px 0 0 0;
-    padding: 0;
-    list-style: none;
-    width: 100%;
-}
-.selected-appliance-card {
-    background: #f7f7f7;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 1.01rem;
-    font-weight: 600;
-    color: #222;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 1.5px solid #e0e0e0;
-    transition: background 0.18s, border 0.18s;
-    word-break: break-word;
-    position: relative;
-}
-.selected-appliance-card::before {
-    content: '';
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #227be6;
-    margin-right: 10px;
-    flex-shrink: 0;
-}
-.selected-appliance-card:hover, .selected-appliance-card:focus-within {
-    background: #e3f0ff;
-    border: 1.5px solid #227be6;
-}
-.selected-appliance-card .appliance-dot {
-    width: 14px;
-    height: 14px;
-    margin-top: 3px;
-    margin-right: 6px;
-    border-radius: 50%;
-    background: #227be6;
-    border: 2px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    display: inline-block;
-    flex-shrink: 0;
-}
-.schedule-graph-placeholder {
-    margin-top: 32px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(34,123,230,0.10), 0 1.5px 8px rgba(242,86,34,0.08);
-    padding: 38px 0 32px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 180px;
-    border: 1.5px solid #e0e0e0;
-}
-.graph-icon {
-    font-size: 2.8rem;
-    color: #227be6;
-    margin-bottom: 10px;
-}
-.graph-placeholder-text {
-    font-size: 1.13rem;
-    font-weight: 700;
-    color: #444;
-    text-align: center;
-}
-.selected-appliance-list-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 18px;
-    margin: 10px 0 0 0;
-    padding: 0;
-    list-style: none;
-    width: 100%;
-}
-@media (max-width: 600px) {
-    .selected-appliance-list-grid {
-        grid-template-columns: 1fr;
-    }
-} 

@@ -1,0 +1,62 @@
+{% from '_icons.html' import icon, logo_mark %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>{% block title %}{% endblock %} · Volt Vortex</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+</head>
+<body>
+    <div class="auth">
+        <aside class="auth-aside" style="--auth-img: url('{{ url_for('static', filename='dashboard_slides/tip2.jpg') }}')">
+            <a href="{{ url_for('access.login') }}" class="brand">
+                <span class="brand-mark">{{ logo_mark("lm-aside", 32) }}</span>
+                <span class="brand-name">Volt Vortex</span>
+            </a>
+            <div class="auth-pitch">
+                <h2>Know what your home runs on.</h2>
+                <p>Track every appliance, keep daily use under your cap, and shift the heavy loads to off-peak hours.</p>
+                <div class="rates">
+                    <div>
+                        <div class="rate-k">Peak</div>
+                        <div class="rate-v">₱7.48 <small>/kWh</small></div>
+                        <div class="rate-t">8 AM – 9 PM</div>
+                    </div>
+                    <div>
+                        <div class="rate-k">Off-peak</div>
+                        <div class="rate-v">₱3.55 <small>/kWh</small></div>
+                        <div class="rate-t">9 PM – 8 AM</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="auth-main">
+            <div class="auth-form">
+                <a href="{{ url_for('access.login') }}" class="brand auth-brand-mobile">
+                    <span class="brand-mark">{{ logo_mark("lm-mobile", 28) }}</span>
+                    <span class="brand-name">Volt Vortex</span>
+                </a>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                    <div class="alert alert--{{ 'danger' if category in ('danger', 'error') else category if category in ('success', 'warning') else 'info' }}" role="alert">
+                        {{ icon('alert' if category in ('danger', 'error', 'warning') else 'check' if category == 'success' else 'info', 18) }}
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>
