@@ -45,14 +45,27 @@
                     <button type="button" class="btn btn--ghost btn--sm" id="selectAllCustom">Select all</button>
                 </div>
                 {% set posted = request.form.getlist('selected_appliances') %}
-                <div class="checks">
+                {% set peak = (on_appliances|map(attribute='daily_energy')|map('float')|max) or 1 %}
+                <ul class="checks">
                     {% for appliance in on_appliances %}
-                    <label class="check">
-                        <input type="checkbox" name="selected_appliances" value="{{ appliance.appliances_id }}" {% if (posted and appliance.appliances_id in posted) or (not posted and loop.first) %}checked{% endif %}>
-                        <span>{{ model_map[appliance.appliances_id] }}</span>
-                    </label>
+                    {% set kwh = appliance.daily_energy or 0 %}
+                    <li>
+                        <label class="check">
+                            <input type="checkbox" name="selected_appliances" value="{{ appliance.appliances_id }}" {% if (posted and appliance.appliances_id in posted) or (not posted and loop.first) %}checked{% endif %}>
+                            <span class="check-body">
+                                <span class="check-row">
+                                    <span class="check-name">
+                                        <span class="check-type">{{ appliance.category or 'Appliance' }}</span>
+                                        {% if (appliance.model or '').strip() %}<span class="check-nick">{{ model_map[appliance.appliances_id] }}</span>{% endif %}
+                                    </span>
+                                    <span class="check-val num">{{ '%.2f'|format(kwh) }} kWh/day</span>
+                                </span>
+                                <span class="check-track"><span style="width: {{ (kwh / peak * 100)|round(1) }}%"></span></span>
+                            </span>
+                        </label>
+                    </li>
                     {% endfor %}
-                </div>
+                </ul>
                 {% else %}
                 <p class="pane-empty">No appliances are switched on. <a href="{{ url_for('appliances.appliances_display') }}">Turn some on in Appliances</a>.</p>
                 {% endif %}

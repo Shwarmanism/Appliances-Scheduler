@@ -122,6 +122,45 @@ def add_appliances():
     return redirect(url_for('appliances.appliances_display'))
 
 
+@appliances.route('/edit_appliance/<string:appliance_id>', methods=['POST'])
+@login_required
+def edit_appliance(appliance_id):
+    appliance = Appliances.query.filter_by(user_id=current_user.user_id, appliances_id=appliance_id).first()
+    if not appliance:
+        flash("Appliance not found.", "danger")
+        return redirect(url_for('appliances.appliances_display'))
+
+    try:
+        hours_used = int(request.form.get('hours', appliance.hours_used or 1))
+        days_used = int(request.form.get('days', appliance.days_used or 1))
+        weeks_used = int(request.form.get('weeks', appliance.weeks_used or 4))
+    except (TypeError, ValueError):
+        flash("Please enter valid usage numbers.", "danger")
+        return redirect(url_for('appliances.appliances_display'))
+
+    if not (1 <= hours_used <= 24 and 1 <= days_used <= 7 and 1 <= weeks_used <= 4):
+        flash("Usage must be 1-24 hours, 1-7 days and 1-4 weeks.", "danger")
+        return redirect(url_for('appliances.appliances_display'))
+
+    appliance.model = (request.form.get('model') or '').strip()
+    appliance.hours_used = hours_used
+    appliance.days_used = days_used
+    appliance.weeks_used = weeks_used
+    appliance.monthly_used = weeks_used
+    (appliance.hourly_energy, appliance.daily_energy,
+     appliance.weekly_energy, appliance.monthly_energy) = energy_consumption(
+        float(appliance.wattage or 0), hours_used, days_used, weeks_used)
+    appliance.severity_level = severity_checker(appliance.daily_energy)
+
+    try:
+        db.session.commit()
+        flash(f"Updated {appliance.display_name}.", "success")
+    except Exception:
+        db.session.rollback()
+        flash("Couldn't save your changes. Try again.", "danger")
+    return redirect(url_for('appliances.appliances_display'))
+
+
 @appliances.route('/delete_appliance/<string:appliance_id>', methods=['POST'])
 @login_required
 def delete_appliance(appliance_id):
