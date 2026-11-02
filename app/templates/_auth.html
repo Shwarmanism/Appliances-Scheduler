@@ -9,12 +9,25 @@
     <title>{% block title %}{% endblock %} · Volt Vortex</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
 </head>
 <body>
     <div class="auth">
-        <aside class="auth-aside" style="--auth-img: url('{{ url_for('static', filename='dashboard_slides/tip2.jpg') }}')">
+        {%- set slides = [
+            ('auth/login.jpg', '58% 40%'),
+            ('auth/register.jpg', '52% center'),
+            ('auth/turbines-gold.jpg', '48% center'),
+            ('auth/turbines-red.jpg', 'center 62%'),
+            ('auth/home-lamp.jpg', 'center 55%'),
+        ] -%}
+        {%- set start = self.auth_start()|trim|int -%}
+        <aside class="auth-aside">
+            <div class="auth-slides" id="authSlides" aria-hidden="true">
+                {% for img, pos in slides %}
+                <div class="auth-slide{% if loop.index0 == start %} is-on{% endif %}" data-src="{{ url_for('static', filename=img) }}" style="background-position: {{ pos }};{% if loop.index0 == start %} background-image: url('{{ url_for('static', filename=img) }}');{% endif %}"></div>
+                {% endfor %}
+            </div>
             <a href="{{ url_for('access.login') }}" class="brand">
                 <span class="brand-mark">{{ logo_mark("lm-aside", 32) }}</span>
                 <span class="brand-name">Volt Vortex</span>
@@ -35,6 +48,7 @@
                     </div>
                 </div>
             </div>
+            <div class="auth-dots" id="authDots" aria-hidden="true">{% for _ in slides %}<i{% if loop.index0 == start %} class="on"{% endif %}></i>{% endfor %}</div>
         </aside>
 
         <main class="auth-main">
@@ -56,6 +70,30 @@
                 {% endif %}
                 {% endwith %}
                 {% block content %}{% endblock %}
+{#- which slide each page starts on -#}{% if false %}{% block auth_start %}0{% endblock %}{% endif %}
+<script>
+(function () {
+    var slides = [].slice.call(document.querySelectorAll('#authSlides .auth-slide'));
+    var dots = [].slice.call(document.querySelectorAll('#authDots i'));
+    if (slides.length < 2) return;
+    var cur = slides.findIndex(function (s) { return s.classList.contains('is-on'); });
+    if (cur < 0) cur = 0;
+    function load(s) { if (!s.style.backgroundImage) s.style.backgroundImage = "url('" + s.dataset.src + "')"; }
+    // preload the rest once the page has settled
+    window.addEventListener('load', function () { slides.forEach(load); });
+    function show(i) {
+        load(slides[i]);
+        slides[cur].classList.remove('is-on');
+        slides[i].classList.add('is-on');
+        dots.forEach(function (d, k) { d.classList.toggle('on', k === i); });
+        cur = i;
+    }
+    setInterval(function () {
+        if (document.hidden) return;
+        show((cur + 1) % slides.length);
+    }, 5000);
+})();
+</script>
             </div>
         </main>
     </div>
