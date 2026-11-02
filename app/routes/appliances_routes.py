@@ -130,7 +130,7 @@ def delete_appliance(appliance_id):
     if appliance:
         db.session.delete(appliance)
         db.session.commit()
-        flash(f"Appliance {appliance.model} has been deleted.", "success")
+        flash(f"Appliance {appliance.display_name} has been deleted.", "success")
     else:
         flash("Appliance not found.", "danger")
 

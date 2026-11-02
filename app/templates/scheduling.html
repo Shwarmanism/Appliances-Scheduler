@@ -49,7 +49,7 @@
                     {% for appliance in on_appliances %}
                     <label class="check">
                         <input type="checkbox" name="selected_appliances" value="{{ appliance.appliances_id }}" {% if (posted and appliance.appliances_id in posted) or (not posted and loop.first) %}checked{% endif %}>
-                        <span>{{ appliance.model }}</span>
+                        <span>{{ model_map[appliance.appliances_id] }}</span>
                     </label>
                     {% endfor %}
                 </div>

@@ -54,6 +54,24 @@ class Appliances(db.Model):
 
     status = db.Column(db.String(3), default='off', nullable=False)
 
+    @property
+    def display_name(self):
+        # The nickname is optional when adding an appliance, so fall back to its type.
+        name = (self.model or '').strip()
+        if name:
+            return name
+        return f"{self.category} ({self.capacity})" if self.capacity else (self.category or 'Appliance')
+
+
+def unique_appliance_names(appliances):
+    """Map appliance id -> display name, numbering duplicates ("Fan", "Fan 2", ...)."""
+    seen, names = {}, {}
+    for a in appliances:
+        base = a.display_name
+        seen[base] = seen.get(base, 0) + 1
+        names[a.appliances_id] = base if seen[base] == 1 else f"{base} {seen[base]}"
+    return names
+
 class OptimizedAppliances(db.Model):
     __tablename__=('optimized_appliances')
 

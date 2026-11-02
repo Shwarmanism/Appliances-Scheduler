@@ -73,7 +73,7 @@
         {% set imp = 'High' if a.priority == 3 else 'Medium' if a.priority == 2 else 'Low' if a.priority == 1 else 'None' %}
         <li class="plan-item">
             <span class="plan-n num">{{ loop.index }}</span>
-            <span class="plan-name">{{ a.model }}</span>
+            <span class="plan-name">{{ a.display_name }}</span>
             <span class="plan-kwh num">{{ '%.2f' | format(a.daily_energy or 0) }} kWh</span>
             <span class="badge badge--{{ 'high' if imp == 'High' else 'mid' if imp == 'Medium' else 'low' if imp == 'Low' else 'plain' }}">{{ imp }} importance</span>
         </li>
