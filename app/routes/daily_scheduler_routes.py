@@ -1,5 +1,7 @@
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import current_user, login_required
+from app.rates import HOURLY_RATES
 from app.models import Appliances, OptimizedAppliances, ScheduledApplianceUsage, unique_appliance_names
 import heapq
 from app import db
@@ -29,21 +31,7 @@ def schedule():
 
     if request.method == 'POST':
         try:
-            random.seed(42)  # optional: makes results reproducible
-
-            hourly_rates = []
-            for hour in range(24):
-                if 0 <= hour < 6:
-                    rate = round(random.uniform(3.0, 3.8), 2)  # Off-peak early morning
-                elif 6 <= hour < 12:
-                    rate = round(random.uniform(5.0, 6.5), 2)  # Morning ramp-up
-                elif 12 <= hour < 18:
-                    rate = round(random.uniform(6.5, 8.0), 2)  # Midday peak
-                elif 18 <= hour < 22:
-                    rate = round(random.uniform(7.0, 8.5), 2)  # Evening high
-                else:
-                    rate = round(random.uniform(4.0, 5.0), 2)  # Late evening cool-down
-                hourly_rates.append(rate)
+            hourly_rates = HOURLY_RATES
 
             selected_type = request.form.get('selected_type') 
             time_start = int(request.form.get('time_start') or 0)
@@ -99,6 +87,7 @@ def schedule():
                 print(f"📦 selected_appliances: {selected_appliances}")
                 print(f"🕒 Time range: {time_start} to {time_end}")
                 schedule_type_code = 'OPT' if selected_type == 'OPT' else 'CUS'
+                saved_at = datetime.utcnow()
                 for a in selected:
                     result = schedule.get(names[a.appliances_id])
                     if result:
@@ -112,7 +101,8 @@ def schedule():
                             energy_kwh=energy_kwh,
                             is_partial=result['is_partial'],
                             hours_used=",".join(str(h) for h in result['hours']),
-                            selected_type=schedule_type_code
+                            selected_type=schedule_type_code,
+                            date_created=saved_at
 
                         )
                         db.session.add(usage)

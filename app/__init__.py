@@ -45,6 +45,12 @@ def create_app():
             return None
         return user
     
+    from app import rates as _rates
+
+    @app.context_processor
+    def inject_rates():
+        return {'rates': _rates}
+
     @app.template_filter('format_hour')
     def format_hour(hour):
         if hour is None:

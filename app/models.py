@@ -97,3 +97,4 @@ class ScheduledApplianceUsage(db.Model):
 
     # Optional: store raw list of hours as comma-separated string (e.g. "5,6,7,...")
     hours_used = db.Column(db.String(255))
+    selected_type = db.Column(db.String(3))                  # 'OPT' (optimized plan) or 'CUS' (picked)

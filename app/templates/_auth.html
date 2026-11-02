@@ -38,13 +38,13 @@
                 <div class="rates">
                     <div>
                         <div class="rate-k">Peak</div>
-                        <div class="rate-v">₱7.48 <small>/kWh</small></div>
-                        <div class="rate-t">8 AM – 9 PM</div>
+                        <div class="rate-v">₱{{ '%.2f'|format(rates.PEAK_RATE) }} <small>/kWh</small></div>
+                        <div class="rate-t">{{ rates.hour_label(rates.PEAK_START) }} – {{ rates.hour_label(rates.PEAK_END) }}</div>
                     </div>
                     <div>
                         <div class="rate-k">Off-peak</div>
-                        <div class="rate-v">₱3.55 <small>/kWh</small></div>
-                        <div class="rate-t">9 PM – 8 AM</div>
+                        <div class="rate-v">₱{{ '%.2f'|format(rates.OFFPEAK_RATE) }} <small>/kWh</small></div>
+                        <div class="rate-t">{{ rates.hour_label(rates.PEAK_END) }} – {{ rates.hour_label(rates.PEAK_START) }}</div>
                     </div>
                 </div>
             </div>

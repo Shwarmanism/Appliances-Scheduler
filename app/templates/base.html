@@ -45,7 +45,7 @@
             <nav class="nav" aria-label="Main">
                 {% for endpoint, label, ic in nav %}
                 <a href="{{ url_for(endpoint) }}" class="nav-item{% if request.endpoint == endpoint %} is-active{% endif %}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>
-                    {{ icon(ic) }}<span>{{ label }}</span>
+                    <span>{{ label }}</span>
                 </a>
                 {% endfor %}
             </nav>
@@ -59,7 +59,7 @@
                     </span>
                 </div>
                 <form action="{{ url_for('access.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="icon-btn" aria-label="Log out" title="Log out">{{ icon('logout', 18) }}</button>
+                    <button type="submit" class="logout-link">{{ icon('logout', 18) }}<span>Log out</span></button>
                 </form>
             </div>
         </aside>

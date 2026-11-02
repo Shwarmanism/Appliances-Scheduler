@@ -9,12 +9,13 @@
 
 .appliance-list { list-style: none; margin: 0; padding: 0; }
 .appliance-card {
-    display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 18px;
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto; align-items: center; gap: 18px;
     padding: 16px 20px; border-bottom: 1px solid var(--border);
     transition: background var(--dur) var(--ease), opacity 220ms ease, transform 220ms var(--ease);
 }
 .appliance-card:last-child { border-bottom: 0; }
 .appliance-card:hover { background: #fcfbf9; }
+.appliance-card .edit-appliance-btn { margin-right: -12px; }
 .appliance-card.is-leaving { opacity: 0; transform: translateX(12px); }
 .appliance-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .appliance-title { font-weight: 700; font-size: var(--fs-md); letter-spacing: -0.01em; }
@@ -47,17 +48,21 @@
 }
 #daysPerWeekRow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 #daysPerWeekRow .choice-item { min-width: 0; padding: 0; }
-#weeksPerMonthRow .choice-item { position: relative; flex: 1; }
+#weeksPerMonthRow .choice-item, #editApplianceForm .choice-item { position: relative; flex: 1; }
+.choice--7 { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.choice--7 .choice-item { min-width: 0; padding: 0; }
+.edit-preview { margin: 18px 0 0; padding: 10px 14px; border-radius: var(--r-md); background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; font-size: var(--fs-sm); }
 
 @media (max-width: 640px) {
     .list-head { padding: 12px 16px; }
     .appliance-card {
-        grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "sw info del" ". cost cost";
+        grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "sw info edit del" ". cost cost cost";
         gap: 10px 14px; padding: 14px 16px;
     }
     .appliance-card .switch { grid-area: sw; }
     .appliance-info { grid-area: info; }
     .appliance-card .delete-appliance-btn { grid-area: del; }
+    .appliance-card .edit-appliance-btn { grid-area: edit; margin-right: -8px; }
     .appliance-meta { gap: 2px 12px; }
     .appliance-meta span + span::before { display: none; }
     .appliance-cost { grid-area: cost; flex-direction: row; align-items: baseline; gap: 6px; }

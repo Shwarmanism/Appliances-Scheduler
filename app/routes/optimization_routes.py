@@ -103,11 +103,12 @@ def knapsack(appliances, max_kwh):
     return selected[::-1]
 
 def total_save(appliances, selected_appliances):
+    from app.rates import ESTIMATE_RATE
 
     all_on = [a for a in appliances if a.status == 'on']
-    total_cost_all = sum((a.daily_energy or 0) * 11 for a in all_on)
+    total_cost_all = sum((a.daily_energy or 0) * ESTIMATE_RATE for a in all_on)
 
-    total_cost_selected = sum((a.daily_energy or 0) * 11 for a in selected_appliances)
+    total_cost_selected = sum((a.daily_energy or 0) * ESTIMATE_RATE for a in selected_appliances)
 
     savings = round(total_cost_all - total_cost_selected, 2)
 
