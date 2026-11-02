@@ -1,4 +1,4 @@
-{% from '_icons.html' import icon, logo_mark %}
+{% from '_icons.html' import icon %}
 {%- set nav = [
     ('home.home_dashboard', 'Dashboard', 'home'),
     ('appliances.appliances_display', 'Appliances', 'plug'),
@@ -17,7 +17,7 @@
     <title>{% block title %}{% endblock %} · Volt Vortex</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
     {% block head %}{% endblock %}
 </head>
@@ -27,7 +27,6 @@
     <header class="topbar">
         <button type="button" class="icon-btn" id="navOpen" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">{{ icon('menu') }}</button>
         <a href="{{ url_for('home.home_dashboard') }}" class="brand brand--compact">
-            <span class="brand-mark">{{ logo_mark("lm-top", 24) }}</span>
             <span class="brand-name">Volt Vortex</span>
         </a>
     </header>
@@ -36,7 +35,6 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-head">
                 <a href="{{ url_for('home.home_dashboard') }}" class="brand">
-                    <span class="brand-mark">{{ logo_mark("lm-side", 28) }}</span>
                     <span class="brand-name">Volt Vortex</span>
                 </a>
                 <button type="button" class="icon-btn sidebar-close" id="navClose" aria-label="Close navigation">{{ icon('x') }}</button>
@@ -59,7 +57,7 @@
                     </span>
                 </div>
                 <form action="{{ url_for('access.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="logout-link">{{ icon('logout', 18) }}<span>Log out</span></button>
+                    <button type="submit" class="logout-link" aria-label="Log out" title="Log out">{{ icon('logout', 20) }}</button>
                 </form>
             </div>
         </aside>

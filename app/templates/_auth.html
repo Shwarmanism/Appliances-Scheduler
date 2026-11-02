@@ -1,4 +1,4 @@
-{% from '_icons.html' import icon, logo_mark %}
+{% from '_icons.html' import icon %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +9,7 @@
     <title>{% block title %}{% endblock %} · Volt Vortex</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
 </head>
 <body>
@@ -29,7 +29,6 @@
                 {% endfor %}
             </div>
             <a href="{{ url_for('access.login') }}" class="brand">
-                <span class="brand-mark">{{ logo_mark("lm-aside", 32) }}</span>
                 <span class="brand-name">Volt Vortex</span>
             </a>
             <div class="auth-pitch">
@@ -54,7 +53,6 @@
         <main class="auth-main">
             <div class="auth-form">
                 <a href="{{ url_for('access.login') }}" class="brand auth-brand-mobile">
-                    <span class="brand-mark">{{ logo_mark("lm-mobile", 28) }}</span>
                     <span class="brand-name">Volt Vortex</span>
                 </a>
                 {% with messages = get_flashed_messages(with_categories=true) %}
