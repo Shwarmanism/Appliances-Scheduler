@@ -25,17 +25,10 @@
 @keyframes grow { from { transform: scaleX(0); } }
 
 .facts { margin: 14px 0 0; display: flex; flex-direction: column; }
-.fact {
-    display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; row-gap: 2px; align-items: center;
-    padding: 14px 0; border-top: 1px solid var(--border);
-}
+.fact { display: flex; flex-direction: column; gap: 2px; padding: 14px 0; border-top: 1px solid var(--border); }
 .fact:first-child { border-top: 0; padding-top: 0; }
-.fact-icon { grid-row: span 2; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-ink); }
-.fact-icon--good { background: var(--success-soft); color: var(--success); }
-.fact-icon--warn { background: var(--warning-soft); color: var(--warning); }
 .fact dt { font-size: var(--fs-sm); color: var(--text-2); font-weight: 600; }
 .fact dd { margin: 0; font-weight: 800; font-size: var(--fs-md); }
-.tags-inline { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px !important; }
 
 .legend-row { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: var(--fs-sm); color: var(--text-2); font-weight: 600; }
 .legend-row span { display: inline-flex; align-items: center; gap: 8px; }

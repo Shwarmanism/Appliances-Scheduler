@@ -78,45 +78,13 @@
             {% endif %}
         </section>
 
-        <section class="tip" aria-roledescription="carousel" aria-label="Energy-saving tip">
-            <img id="slideshow-img" class="tip-img" src="{{ url_for('static', filename='dashboard_slides/tip1.jpg') }}" alt="">
-            <div class="tip-body">
-                <p class="tip-text"><strong>Energy-saving tip.</strong> {{ random_tip }}</p>
+        <section class="panel">
+            <div class="panel-head">
+                <h2 class="panel-title">Energy-saving tip</h2>
             </div>
-            <div class="tip-controls">
-                <button type="button" class="tip-btn" onclick="prevSlide()" aria-label="Previous image">{{ icon('chevron-left', 18) }}</button>
-                <div class="tip-dots" id="tipDots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
-                <button type="button" class="tip-btn" onclick="nextSlide()" aria-label="Next image">{{ icon('chevron-right', 18) }}</button>
-            </div>
+            <p class="tip-text">{{ random_tip }}</p>
         </section>
     </div>
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-    const slides = [
-        "{{ url_for('static', filename='dashboard_slides/tip1.jpg') }}",
-        "{{ url_for('static', filename='dashboard_slides/tip2.jpg') }}",
-        "{{ url_for('static', filename='dashboard_slides/tip3.jpg') }}"
-    ];
-    slides.forEach(src => { const i = new Image(); i.src = src; });
-    let currentSlide = 0;
-    const img = document.getElementById('slideshow-img');
-    const dots = document.querySelectorAll('#tipDots i');
-    function showSlide(index) {
-        img.classList.add('is-swap');
-        setTimeout(() => {
-            img.src = slides[index];
-            img.classList.remove('is-swap');
-        }, 180);
-        dots.forEach((d, i) => d.classList.toggle('on', i === index));
-    }
-    function prevSlide() { currentSlide = (currentSlide - 1 + slides.length) % slides.length; showSlide(currentSlide); }
-    function nextSlide() { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }
-    let auto = setInterval(nextSlide, 6000);
-    const tip = document.querySelector('.tip');
-    tip.addEventListener('mouseenter', () => clearInterval(auto));
-    tip.addEventListener('mouseleave', () => { auto = setInterval(nextSlide, 6000); });
-</script>
-{% endblock %}

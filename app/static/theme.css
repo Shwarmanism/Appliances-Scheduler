@@ -129,7 +129,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .nav-item:hover { background: var(--surface-3); color: var(--text); }
 .nav-item.is-active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-lift); }
-.nav-item.is-active .i { color: var(--accent); }
+.nav-item.is-active { color: var(--accent-ink); }
+.logout-link { padding: 0 10px; color: var(--text-2); }
 
 .sidebar-foot {
     margin-top: auto; display: flex; align-items: center; gap: 8px;
