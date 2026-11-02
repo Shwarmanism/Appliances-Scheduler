@@ -28,12 +28,12 @@
         {% set lvl = 'low' if appliance.severity_level == 'Low' else 'mid' if appliance.severity_level == 'Moderate' else 'high' %}
         <li class="appliance-card" data-id="{{ appliance.appliances_id }}">
             <input type="checkbox" class="switch appliance-toggle" name="appliance-status"
-                   aria-label="{{ appliance.model or appliance.category }} power"
+                   aria-label="{{ appliance.display_name }} power"
                    {% if appliance.status == 'on' %}checked{% endif %}
                    onchange="toggleApplianceStatus('{{ appliance.appliances_id }}', this)">
             <div class="appliance-info">
                 <div class="appliance-title-row">
-                    <span class="appliance-title">{{ appliance.model or appliance.category }}</span>
+                    <span class="appliance-title">{{ appliance.display_name }}</span>
                     <span class="badge badge--{{ lvl }}">{{ 'Light' if lvl == 'low' else 'Medium' if lvl == 'mid' else 'Severe' }}</span>
                 </div>
                 <div class="appliance-meta num">
@@ -46,7 +46,7 @@
                 <span class="cost-v">₱{{ "%.2f"|format((appliance.daily_energy or 0) * 12) }}</span>
                 <span class="cost-k">per day</span>
             </div>
-            <button type="button" class="icon-btn icon-btn--danger delete-appliance-btn" aria-label="Delete {{ appliance.model or appliance.category }}" title="Delete">
+            <button type="button" class="icon-btn icon-btn--danger delete-appliance-btn" aria-label="Delete {{ appliance.display_name }}" title="Delete">
                 {{ icon('trash', 18) }}
             </button>
         </li>
@@ -72,7 +72,7 @@
             </div>
             <button type="button" class="icon-btn modal-x" id="closeAddApplianceModal" data-close aria-label="Close">{{ icon('x') }}</button>
         </div>
-        <form id="addApplianceForm" method="POST" action="{{ url_for('appliances.add_appliances') }}">
+        <form id="addApplianceForm" method="POST" action="{{ url_for('appliances.add_appliances') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="row">
                 <div class="field">
                     <label class="label" for="appliance-category-filter">Category</label>
@@ -230,7 +230,7 @@
         const status = el.checked ? 'on' : 'off';
         fetch('{{ url_for("appliances.toggle_appliance_status") }}', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF },
             body: `appliance_id=${encodeURIComponent(applianceId)}&status=${encodeURIComponent(status)}`
         })
         .then(r => r.json())
@@ -257,7 +257,7 @@
         if (!pendingDeleteId) return;
         const id = pendingDeleteId;
         pendingDeleteId = null;
-        fetch(`/appliances/delete_appliance/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+        fetch(`/appliances/delete_appliance/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF } })
         .then(res => {
             if (!res.ok) throw new Error();
             const card = document.querySelector(`.appliance-card[data-id='${id}']`);

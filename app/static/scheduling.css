@@ -28,6 +28,8 @@
 }
 .check:hover { background: var(--surface-2); }
 .check:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.check input { flex: none; margin: 0; }
+.check span { min-width: 0; overflow-wrap: anywhere; }
 
 .range-row { display: flex; align-items: center; gap: 10px; }
 .range-row .select { flex: 1; }

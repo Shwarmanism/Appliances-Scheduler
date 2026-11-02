@@ -114,8 +114,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .brand-mark { display: grid; place-items: center; line-height: 0; }
 .logo-bolt { display: block; overflow: visible; }
 .brand-name {
-    font-weight: 800; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;
-    color: #f25622; white-space: nowrap;
+    font-family: "Syne", var(--font); font-weight: 700;
+    font-size: 1.0625rem; letter-spacing: .04em; text-transform: uppercase;
+    color: #f25622; white-space: nowrap; line-height: 1;
 }
 
 .nav { display: flex; flex-direction: column; gap: 2px; }
@@ -407,27 +408,35 @@ input[type="checkbox"]:not(.switch), input[type="radio"] { accent-color: var(--a
    ========================================================================== */
 .auth { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); }
 .auth-aside {
-    position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
-    padding: 40px 48px; color: #f4efe8; background: var(--ink);
+    position: relative; overflow: hidden; isolation: isolate;
+    display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;
+    padding: 40px 48px; color: #fff4ea; background: #3a1d0c;
 }
-.auth-aside::before {
-    content: ""; position: absolute; inset: 0; z-index: 0;
-    background: var(--auth-img) center / cover no-repeat;
-    opacity: .78;
+.auth-slides { position: absolute; inset: 0; z-index: -2; }
+.auth-slide {
+    position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat;
+    opacity: 0; transform: scale(1.04);
+    transition: opacity 1.2s ease, transform 6s ease-out;
 }
+.auth-slide.is-on { opacity: 1; transform: scale(1); }
+.auth-dots { position: absolute; right: 48px; bottom: 44px; display: flex; gap: 6px; }
+.auth-dots i { width: 6px; height: 6px; border-radius: 99px; background: rgba(255, 244, 234, .45); transition: width 300ms var(--ease), background 300ms; }
+.auth-dots i.on { width: 20px; background: #fff; }
 .auth-aside::after {
-    content: ""; position: absolute; inset: 0; z-index: 0;
-    background: linear-gradient(180deg, rgba(29, 26, 22, .55) 0%, rgba(29, 26, 22, .15) 40%, rgba(29, 26, 22, .92) 100%);
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(40, 19, 7, .38) 0%, rgba(40, 19, 7, 0) 18%, rgba(40, 19, 7, 0) 50%, rgba(40, 19, 7, .6) 70%, rgba(32, 15, 6, .9) 100%);
 }
-.auth-aside > * { position: relative; z-index: 1; }
-.auth-aside .brand-name { font-size: 1.125rem; }
+.auth-aside .brand-name { color: #fff; font-size: 1.25rem; text-shadow: 0 1px 8px rgba(40, 19, 7, .35); }
+.auth-aside .logo-bolt stop:first-child { stop-color: #fff3a0; }
+.auth-aside .logo-bolt stop:last-child { stop-color: #ffd400; }
+.auth-aside .brand .logo-bolt { width: 32px; height: 32px; filter: drop-shadow(0 1px 6px rgba(40, 19, 7, .35)); }
 .auth-pitch h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800; letter-spacing: -0.035em; color: #fff; max-width: 16ch; }
-.auth-pitch p { margin-top: 12px; color: #d9d0c4; max-width: 42ch; }
-.rates { display: flex; gap: 28px; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .18); }
-.rate-k { font-size: var(--fs-xs); font-weight: 700; color: #c9bfb2; text-transform: uppercase; letter-spacing: .06em; }
+.auth-pitch p { margin-top: 12px; color: #ffeadb; max-width: 42ch; }
+.rates { display: flex; gap: 28px; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(255, 236, 220, .28); }
+.rate-k { font-size: var(--fs-xs); font-weight: 700; color: #ffe27a; text-transform: uppercase; letter-spacing: .06em; }
 .rate-v { font-size: var(--fs-lg); font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
-.rate-v small { font-size: var(--fs-sm); font-weight: 600; color: #c9bfb2; }
-.rate-t { font-size: var(--fs-xs); color: #c9bfb2; }
+.rate-v small { font-size: var(--fs-sm); font-weight: 600; color: #f3d3bb; }
+.rate-t { font-size: var(--fs-xs); color: #f3d3bb; }
 
 .auth-main { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
 .auth-form { width: 100%; max-width: 380px; }

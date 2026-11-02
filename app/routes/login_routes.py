@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db, bcrypt
 from app.models import User 
@@ -84,9 +84,13 @@ def settings():
         if action == "profile":
             fullname = (request.form.get("fullname") or "").strip()
             email = (request.form.get("email") or "").strip()
+            email_changed = email.lower() != (current_user.email or "").lower()
             if not fullname or not email:
                 flash("Name and email can't be empty.", "danger")
-            elif email != current_user.email and User.query.filter_by(email=email).first():
+            elif email_changed and not bcrypt.check_password_hash(
+                    current_user.password, request.form.get("current_password") or ""):
+                flash("Enter your current password to change your email.", "danger")
+            elif email_changed and User.query.filter_by(email=email).first():
                 flash("That email is already used by another account.", "danger")
             else:
                 current_user.fullname = fullname
@@ -107,7 +111,13 @@ def settings():
             else:
                 current_user.password = bcrypt.generate_password_hash(new).decode("utf-8")
                 db.session.commit()
-                flash("Password changed.", "success")
+                # The session id includes a fingerprint of the password hash, so every
+                # other session is now invalid. Re-issue this one so the user stays in.
+                user = current_user._get_current_object()
+                logout_user()
+                session.clear()
+                login_user(user)
+                flash("Password changed. Other devices have been logged out.", "success")
 
         return redirect(url_for("access.settings"))
 

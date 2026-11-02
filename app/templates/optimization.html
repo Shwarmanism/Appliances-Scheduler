@@ -12,7 +12,7 @@
 
 <div class="grid opt-top">
     <section class="panel">
-        <form id="optForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST" novalidate>
+        <form id="optForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST" novalidate><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="save_not" value="">
             <div class="row">
                 <div class="field">
@@ -46,7 +46,7 @@
             {% endif %}
         </div>
         {% if appliances %}
-        <form id="saveForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST">
+        <form id="saveForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="energy-cap" value="{{ energy_cap }}">
             <input type="hidden" name="save_not" value="save">
             <button id="saveBtn" type="submit" class="btn btn--success">{{ icon('save', 18) }} Save combination</button>
@@ -73,7 +73,7 @@
         {% set imp = 'High' if a.priority == 3 else 'Medium' if a.priority == 2 else 'Low' if a.priority == 1 else 'None' %}
         <li class="plan-item">
             <span class="plan-n num">{{ loop.index }}</span>
-            <span class="plan-name">{{ a.model }}</span>
+            <span class="plan-name">{{ a.display_name }}</span>
             <span class="plan-kwh num">{{ '%.2f' | format(a.daily_energy or 0) }} kWh</span>
             <span class="badge badge--{{ 'high' if imp == 'High' else 'mid' if imp == 'Medium' else 'low' if imp == 'Low' else 'plain' }}">{{ imp }} importance</span>
         </li>

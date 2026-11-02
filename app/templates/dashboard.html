@@ -48,7 +48,7 @@
                 <span class="rank-n num">{{ loop.index }}</span>
                 <div class="rank-body">
                     <div class="rank-row">
-                        <span class="rank-name">{{ appliance.model }}</span>
+                        <span class="rank-name">{{ appliance.display_name }}</span>
                         <span class="rank-val num">{{ '%.1f' | format(appliance.monthly_energy or 0) }} kWh</span>
                     </div>
                     <div class="rank-bar"><span style="width: {{ ((appliance.monthly_energy or 0) / peak * 100) | round(1) }}%"></span></div>

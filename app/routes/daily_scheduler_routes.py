@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import current_user, login_required
-from app.models import Appliances, OptimizedAppliances, ScheduledApplianceUsage
+from app.models import Appliances, OptimizedAppliances, ScheduledApplianceUsage, unique_appliance_names
 import heapq
 from app import db
 
@@ -16,6 +16,7 @@ scheduler = Blueprint('scheduler', __name__)
 @login_required
 def schedule():
     appliances = Appliances.query.filter_by(user_id=current_user.user_id).all()
+    names = unique_appliance_names(appliances)
 
     schedule = {}
     total_cost = 0
@@ -77,9 +78,9 @@ def schedule():
             
             for a in selected:
                 if a.hours_used is None:
-                    flash(f"No usage hours set for {a.model}.", "warning")
+                    flash(f"No usage hours set for {names[a.appliances_id]}.", "warning")
                     continue
-                schedule[a.model] = dijkstra_schedule(
+                schedule[names[a.appliances_id]] = dijkstra_schedule(
                     hourly_rates,
                     a.wattage,
                     a.hours_used,
@@ -99,7 +100,7 @@ def schedule():
                 print(f"🕒 Time range: {time_start} to {time_end}")
                 schedule_type_code = 'OPT' if selected_type == 'OPT' else 'CUS'
                 for a in selected:
-                    result = schedule.get(a.model)
+                    result = schedule.get(names[a.appliances_id])
                     if result:
                         energy_kwh = round((result['duration'] * a.wattage) / 1000, 2)
                         usage = ScheduledApplianceUsage(
@@ -127,14 +128,14 @@ def schedule():
             total_energy = sum(
                 round((info['duration'] * appliance.wattage) / 1000, 2)
                 for appliance in selected
-                for model, info in schedule.items() if model == appliance.model
+                for model, info in schedule.items() if model == names[appliance.appliances_id]
             )
             # plot_url = create_schedule_plot(schedule)
 
         except Exception as e:
             flash(f"An error occurred: {str(e)}", "danger")
 
-    model_map = {a.appliances_id: a.model for a in appliances}
+    model_map = names
 
     latest_combination = db.session.query(OptimizedAppliances.combination_id) \
         .filter_by(user_id=current_user.user_id) \

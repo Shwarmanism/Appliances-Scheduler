@@ -1,6 +1,9 @@
 from app import db
 from flask_login import UserMixin
 from datetime import datetime
+import hashlib
+import hmac
+from flask import current_app
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -11,8 +14,14 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(254), nullable=False)
 
+    def session_fingerprint(self):
+        # Keyed digest of the stored password hash: changes whenever the password does,
+        # and never exposes the hash itself in the session cookie.
+        key = current_app.config['SECRET_KEY'].encode()
+        return hmac.new(key, self.password.encode(), hashlib.sha256).hexdigest()[:32]
+
     def get_id(self):
-        return str(self.user_id)
+        return f"{self.user_id}:{self.session_fingerprint()}"
     
     appliances = db.relationship(
         'Appliances',
@@ -44,6 +53,24 @@ class Appliances(db.Model):
     monthly_energy = db.Column(db.Float, nullable=False)
 
     status = db.Column(db.String(3), default='off', nullable=False)
+
+    @property
+    def display_name(self):
+        # The nickname is optional when adding an appliance, so fall back to its type.
+        name = (self.model or '').strip()
+        if name:
+            return name
+        return f"{self.category} ({self.capacity})" if self.capacity else (self.category or 'Appliance')
+
+
+def unique_appliance_names(appliances):
+    """Map appliance id -> display name, numbering duplicates ("Fan", "Fan 2", ...)."""
+    seen, names = {}, {}
+    for a in appliances:
+        base = a.display_name
+        seen[base] = seen.get(base, 0) + 1
+        names[a.appliances_id] = base if seen[base] == 1 else f"{base} {seen[base]}"
+    return names
 
 class OptimizedAppliances(db.Model):
     __tablename__=('optimized_appliances')

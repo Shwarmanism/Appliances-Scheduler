@@ -37,7 +37,7 @@ def analytics_tab():
 
 
 def appliances_usage_breakdown(appliances):
-    labels = [a.model for a in appliances]
+    labels = [a.display_name for a in appliances]
     usage_values = [a.daily_energy or 0 for a in appliances]
 
     filtered_data = [(label, usage) for label, usage in zip(labels, usage_values) if usage > 0]

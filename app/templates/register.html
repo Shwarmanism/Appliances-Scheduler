@@ -1,10 +1,11 @@
 {% extends '_auth.html' %}
+{% block auth_start %}1{% endblock %}
 {% block title %}Create account{% endblock %}
 {% block content %}
 {% set f = form | default({}) %}
 <h1>Create your account</h1>
 <p class="lede">It takes a minute. Then add your first appliance.</p>
-<form id="register-form" method="POST" action="{{ url_for('access.register') }}">
+<form id="register-form" method="POST" action="{{ url_for('access.register') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="field">
         <label class="label" for="register-name">Full name</label>
         <input class="input" type="text" id="register-name" name="fullname" value="{{ f.get('fullname', '') }}" autocomplete="name" required autofocus>

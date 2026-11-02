@@ -12,11 +12,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#f7f5f2">
     <title>{% block title %}{% endblock %} · Volt Vortex</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
     {% block head %}{% endblock %}
 </head>
@@ -57,7 +58,7 @@
                         <span class="who-mail">{{ current_user.email }}</span>
                     </span>
                 </div>
-                <form action="{{ url_for('access.logout') }}" method="post">
+                <form action="{{ url_for('access.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="icon-btn" aria-label="Log out" title="Log out">{{ icon('logout', 18) }}</button>
                 </form>
             </div>
@@ -87,6 +88,7 @@
     {% block modals %}{% endblock %}
 
     <script>
+    window.CSRF = document.querySelector('meta[name="csrf-token"]').content;
     (function () {
         var sb = document.getElementById('sidebar'), scrim = document.getElementById('scrim'),
             openBtn = document.getElementById('navOpen'), closeBtn = document.getElementById('navClose');

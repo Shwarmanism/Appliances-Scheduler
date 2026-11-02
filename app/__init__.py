@@ -1,12 +1,15 @@
+import hmac
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from database.config import mysql_path, secret_key
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
+csrf = CSRFProtect()
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
@@ -14,10 +17,15 @@ def create_app():
     app.config['SECRET_KEY'] = secret_key
     app.config['SQLALCHEMY_DATABASE_URI'] = mysql_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
+    app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    csrf.init_app(app)
 
     login_manager.login_view = 'access.login'
     login_manager.login_message = 'Please log in to continue.'
@@ -26,8 +34,16 @@ def create_app():
     from app.models import User
 
     @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    def load_user(session_id):
+        # Session ids look like "<user_id>:<password fingerprint>". When the password
+        # changes the fingerprint no longer matches, so every older session is logged out.
+        uid, _, fingerprint = str(session_id).partition(':')
+        if not uid.isdigit() or not fingerprint:
+            return None
+        user = db.session.get(User, int(uid))
+        if user is None or not hmac.compare_digest(user.session_fingerprint(), fingerprint):
+            return None
+        return user
     
     @app.template_filter('format_hour')
     def format_hour(hour):
