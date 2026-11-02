@@ -59,7 +59,7 @@
                     </span>
                 </div>
                 <form action="{{ url_for('access.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn btn--ghost btn--sm logout-link">Log out</button>
+                    <button type="submit" class="logout-link">{{ icon('logout', 18) }}<span>Log out</span></button>
                 </form>
             </div>
         </aside>
