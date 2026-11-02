@@ -1,3 +1,4 @@
+from app.rates import ESTIMATE_RATE
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from app.models import Appliances
@@ -23,7 +24,7 @@ def analytics_tab():
         total_appliances = len(user_appliances)
         total_daily_kwh = sum(user_appliances.daily_energy)
         total_monthly_kwh = sum(user_appliances.monthly_energy)
-        total_monthly_cost = round(total_monthly_kwh * 6, 2)
+        total_monthly_cost = round(total_monthly_kwh * ESTIMATE_RATE, 2)
 
         plot_url = appliances_usage_breakdown(user_appliances)
 

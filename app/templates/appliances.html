@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div class="appliance-cost num">
-                <span class="cost-v">₱{{ "%.2f"|format((appliance.daily_energy or 0) * 12) }}</span>
+                <span class="cost-v">₱{{ "%.2f"|format((appliance.daily_energy or 0) * rates.ESTIMATE_RATE) }}</span>
                 <span class="cost-k">per day</span>
             </div>
             <button type="button" class="icon-btn edit-appliance-btn" aria-label="Edit {{ appliance.display_name }}" title="Edit"
@@ -308,7 +308,7 @@
         const days = +(editForm.querySelector('input[name="days"]:checked') || {}).value || 0;
         const weeks = +(editForm.querySelector('input[name="weeks"]:checked') || {}).value || 0;
         const daily = editWatt * editHours.value / 1000;
-        $('editPreview').textContent = `≈ ${daily.toFixed(2)} kWh/day · ${(daily * days * weeks).toFixed(1)} kWh/month · ₱${(daily * 12).toFixed(2)} per day`;
+        $('editPreview').textContent = `≈ ${daily.toFixed(2)} kWh/day · ${(daily * days * weeks).toFixed(1)} kWh/month · ₱${(daily * {{ rates.ESTIMATE_RATE }}).toFixed(2)} per day`;
     }
     editHours.addEventListener('input', syncEdit);
     editForm.addEventListener('change', syncEdit);

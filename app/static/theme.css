@@ -189,6 +189,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .stat-note { margin-top: 6px; color: var(--text-3); font-size: var(--fs-xs); }
 .stat-value.is-good { color: var(--success); }
 
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* 24-hour strip */
+.day { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; margin-top: 12px; }
+.day-h { height: 22px; border-radius: 3px; background: var(--surface-2); position: relative; }
+.day-h.peak { background: #f6e3d9; }
+.day-h.off { background: #e5ebf3; }
+.day-h.on.peak { background: var(--accent); }
+.day-h.on.off { background: #3b6fc4; }
+.day-axis { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--text-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+
 /* ---------- Buttons ---------- */
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
