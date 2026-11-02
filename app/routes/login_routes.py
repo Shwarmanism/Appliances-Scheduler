@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from app import db, bcrypt
 from app.models import User 
 
@@ -65,3 +65,50 @@ def password_verification():
         return None
 
     return password
+
+
+@access.route("/logout", methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    flash("You've been logged out.", "success")
+    return redirect(url_for("access.login"))
+
+
+@access.route("/settings", methods=["GET", "POST"])
+@login_required
+def settings():
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "profile":
+            fullname = (request.form.get("fullname") or "").strip()
+            email = (request.form.get("email") or "").strip()
+            if not fullname or not email:
+                flash("Name and email can't be empty.", "danger")
+            elif email != current_user.email and User.query.filter_by(email=email).first():
+                flash("That email is already used by another account.", "danger")
+            else:
+                current_user.fullname = fullname
+                current_user.email = email
+                db.session.commit()
+                flash("Profile updated.", "success")
+
+        elif action == "password":
+            old = request.form.get("old_password") or ""
+            new = request.form.get("new_password") or ""
+            confirm = request.form.get("confirm_password") or ""
+            if not bcrypt.check_password_hash(current_user.password, old):
+                flash("Your current password is incorrect.", "danger")
+            elif not new:
+                flash("Enter a new password.", "danger")
+            elif new != confirm:
+                flash("New passwords do not match.", "danger")
+            else:
+                current_user.password = bcrypt.generate_password_hash(new).decode("utf-8")
+                db.session.commit()
+                flash("Password changed.", "success")
+
+        return redirect(url_for("access.settings"))
+
+    return render_template("settings.html")

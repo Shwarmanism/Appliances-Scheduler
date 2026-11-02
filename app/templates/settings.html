@@ -1,129 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings | Volt Vortex</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/dashboard.css">
-    <link rel="stylesheet" href="../static/analytics.css">
-    <link rel="stylesheet" href="../static/appliances.css">
-    <link rel="stylesheet" href="../static/settings.css">
-</head>
-<body>
-    <input type="checkbox" id="sidebar-toggle" hidden>
-    <div class="dashboard-container">
-        <aside class="sidebar glass">
-            <div class="sidebar-top">
-                <label for="sidebar-toggle" class="sidebar-hamburger-btn" aria-label="Toggle sidebar">
-                    <svg class="hamburger-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
-                        <rect y="7" width="32" height="3" rx="1.5" fill="#ffdf00" />
-                        <rect y="14.5" width="32" height="3" rx="1.5" fill="#ffdf00" />
-                        <rect y="22" width="32" height="3" rx="1.5" fill="#ffdf00" />
-                    </svg>
-                </label>
-                <div class="sidebar-logo-block">
-                    <div class="sidebar-logo new-logo">⚡</div>
-                    <div class="sidebar-title">VOLT VORTEX</div>
+{% extends 'base.html' %}
+{% block title %}Settings{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Settings</h1>
+        <p class="lede">Manage your profile, password and session.</p>
+    </div>
+</div>
+
+<div class="settings">
+    <section class="set-row">
+        <div class="set-intro">
+            <h2 class="panel-title">Profile</h2>
+            <p class="panel-sub">Your name appears in the sidebar and dashboard greeting.</p>
+        </div>
+        <form class="panel" method="POST" action="{{ url_for('access.settings') }}">
+            <input type="hidden" name="action" value="profile">
+            <div class="row">
+                <div class="field">
+                    <label class="label" for="fullname">Full name</label>
+                    <input class="input" type="text" id="fullname" name="fullname" value="{{ current_user.fullname }}" autocomplete="name" required>
+                </div>
+                <div class="field">
+                    <label class="label" for="email">Email</label>
+                    <input class="input" type="email" id="email" name="email" value="{{ current_user.email }}" autocomplete="email" required>
                 </div>
             </div>
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-link">
-                    <span class="icon"><img src="../static/Home.svg" alt="Dashboard" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="/appliances" class="nav-link">
-                    <span class="icon"><img src="../static/Appliances.svg" alt="Appliances" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Appliances</span>
-                </a>
-                <a href="/optimization" class="nav-link">
-                    <span class="icon"><img src="../static/Analytics.svg" alt="Optimization" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Optimization</span>
-                </a>
-                <a href="/scheduling" class="nav-link">
-                    <span class="icon"><img src="../static/Report.svg" alt="Scheduling" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Scheduling</span>
-                </a>
-                <a href="/analytics" class="nav-link">
-                    <span class="icon"><img src="../static/Analytics.svg" alt="Analytics" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Analytics</span>
-                </a>
-                <a href="/settings" class="nav-link active" aria-current="page">
-                    <span class="icon"><img src="../static/Profile.svg" alt="Settings" class="sidebar-icon-svg"></span>
-                    <span class="nav-text">Settings</span>
-                </a>
-            </nav>
-        </aside>
-        <main class="main-content gradient-bg">
-            <div class="settings-wrapper">
-                <section class="account-info glass">
-                    <h2 class="section-title">Account Information</h2>
-                    <form class="account-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" id="name" name="name" value="Juan Dela Cruz">
-                                <button type="button" class="update-btn">Update</button>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" id="email" name="email" value="juandelacruz@gmail.com">
-                                <button type="button" class="update-btn">Update</button>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="contact">Contact Number</label>
-                                <input type="text" id="contact" name="contact" value="+63 9851260957">
-                                <button type="button" class="update-btn">Update</button>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <button type="button" class="change-password-btn" id="openChangePasswordModal">Change Password</button>
-                            </div>
-                        </div>
-                    </form>
-                </section>
-                <section class="logout-section glass">
-                    <form action="/logout" method="post" class="logout-form">
-                        <button type="submit" class="logout-btn">Logout</button>
-                    </form>
-                </section>
+            <div class="field">
+                <label class="label" for="username">Username</label>
+                <input class="input" type="text" id="username" value="{{ current_user.username }}" readonly>
+                <span class="hint">Usernames can't be changed.</span>
             </div>
-        </main>
-        <!-- Change Password Modal -->
-        <div id="changePasswordModal" class="modal-overlay" style="display:none;">
-            <div class="modal-content">
-                <h2 class="modal-title">Change Password</h2>
-                <form class="change-password-form">
-                    <label for="old-password">Old Password</label>
-                    <input type="password" id="old-password" name="old-password">
-                    <label for="new-password">New Password</label>
-                    <input type="password" id="new-password" name="new-password">
-                    <label for="confirm-password">Confirm Password</label>
-                    <input type="password" id="confirm-password" name="confirm-password">
-                    <div class="modal-btn-row">
-                        <button type="button" class="modal-cancel-btn" id="closeChangePasswordModal">Cancel</button>
-                        <button type="submit" class="modal-save-btn">Save</button>
-                    </div>
-                </form>
+            <div class="set-actions">
+                <button type="submit" class="btn btn--primary">Save changes</button>
             </div>
+        </form>
+    </section>
+
+    <section class="set-row">
+        <div class="set-intro">
+            <h2 class="panel-title">Password</h2>
+            <p class="panel-sub">Use one you don't use anywhere else.</p>
         </div>
-        <script>
-        // Modal open/close logic
-        document.getElementById('openChangePasswordModal').onclick = function() {
-            document.getElementById('changePasswordModal').style.display = 'flex';
-        };
-        document.getElementById('closeChangePasswordModal').onclick = function() {
-            document.getElementById('changePasswordModal').style.display = 'none';
-        };
-        // Optional: close modal on overlay click
-        document.getElementById('changePasswordModal').onclick = function(e) {
-            if (e.target === this) this.style.display = 'none';
-        };
-        </script>
+        <div class="panel set-inline">
+            <div>
+                <div class="set-k">{{ icon('key', 18) }} Password</div>
+                <div class="muted" style="font-size:var(--fs-sm)">Changing it keeps you logged in on this device.</div>
+            </div>
+            <button type="button" class="btn btn--secondary" id="openChangePasswordModal">Change password</button>
+        </div>
+    </section>
+
+    <section class="set-row">
+        <div class="set-intro">
+            <h2 class="panel-title">Session</h2>
+            <p class="panel-sub">Signed in as {{ current_user.email }}.</p>
+        </div>
+        <div class="panel set-inline">
+            <div class="set-k">{{ icon('logout', 18) }} Log out of Volt Vortex</div>
+            <form action="{{ url_for('access.logout') }}" method="post">
+                <button type="submit" class="btn btn--danger-soft">Log out</button>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block modals %}
+<div id="changePasswordModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h2 class="modal-title" id="pwTitle">Change password</h2>
+            <button type="button" class="icon-btn modal-x" data-close aria-label="Close">{{ icon('x') }}</button>
+        </div>
+        <form method="POST" action="{{ url_for('access.settings') }}" id="pwForm">
+            <input type="hidden" name="action" value="password">
+            <div class="field">
+                <label class="label" for="old-password">Current password</label>
+                <input class="input" type="password" id="old-password" name="old_password" autocomplete="current-password" required>
+            </div>
+            <div class="field">
+                <label class="label" for="new-password">New password</label>
+                <input class="input" type="password" id="new-password" name="new_password" autocomplete="new-password" required>
+            </div>
+            <div class="field">
+                <label class="label" for="confirm-password">Confirm new password</label>
+                <input class="input" type="password" id="confirm-password" name="confirm_password" autocomplete="new-password" required>
+                <span class="hint" id="pwMismatch" style="color:var(--danger)" hidden>Passwords don't match yet.</span>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+                <button type="submit" class="btn btn--primary">Update password</button>
+            </div>
+        </form>
     </div>
-</body>
-</html> 
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('openChangePasswordModal').onclick = () => openModal('changePasswordModal');
+    const np = document.getElementById('new-password'), cp = document.getElementById('confirm-password'), mm = document.getElementById('pwMismatch');
+    function checkMatch() { mm.hidden = !cp.value || np.value === cp.value; }
+    np.addEventListener('input', checkMatch);
+    cp.addEventListener('input', checkMatch);
+    document.getElementById('pwForm').addEventListener('submit', e => {
+        if (np.value !== cp.value) { e.preventDefault(); mm.hidden = false; cp.focus(); }
+    });
+</script>
+{% endblock %}

@@ -20,7 +20,8 @@ def create_app():
     login_manager.init_app(app)
 
     login_manager.login_view = 'access.login'
-    login_manager.login_message = 'info'
+    login_manager.login_message = 'Please log in to continue.'
+    login_manager.login_message_category = 'info'
 
     from app.models import User
 
