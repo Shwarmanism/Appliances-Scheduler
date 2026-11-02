@@ -72,7 +72,7 @@
             </div>
             <button type="button" class="icon-btn modal-x" id="closeAddApplianceModal" data-close aria-label="Close">{{ icon('x') }}</button>
         </div>
-        <form id="addApplianceForm" method="POST" action="{{ url_for('appliances.add_appliances') }}">
+        <form id="addApplianceForm" method="POST" action="{{ url_for('appliances.add_appliances') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="row">
                 <div class="field">
                     <label class="label" for="appliance-category-filter">Category</label>
@@ -230,7 +230,7 @@
         const status = el.checked ? 'on' : 'off';
         fetch('{{ url_for("appliances.toggle_appliance_status") }}', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF },
             body: `appliance_id=${encodeURIComponent(applianceId)}&status=${encodeURIComponent(status)}`
         })
         .then(r => r.json())
@@ -257,7 +257,7 @@
         if (!pendingDeleteId) return;
         const id = pendingDeleteId;
         pendingDeleteId = null;
-        fetch(`/appliances/delete_appliance/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+        fetch(`/appliances/delete_appliance/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF } })
         .then(res => {
             if (!res.ok) throw new Error();
             const card = document.querySelector(`.appliance-card[data-id='${id}']`);

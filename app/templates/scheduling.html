@@ -100,7 +100,7 @@
             {% if schedule %}<p class="panel-sub">Cheapest run time for each appliance inside your window</p>{% endif %}
         </div>
         {% if schedule %}
-        <form id="saveScheduleForm" method="POST" action="{{ url_for('scheduler.schedule') }}">
+        <form id="saveScheduleForm" method="POST" action="{{ url_for('scheduler.schedule') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="selected_type" id="saveSelectedType">
             <input type="hidden" name="time_start" id="saveTimeStart">
             <input type="hidden" name="time_end" id="saveTimeEnd">
@@ -232,6 +232,7 @@
             const i = document.createElement('input');
             i.type = 'hidden'; i.name = name; i.value = value; form.appendChild(i);
         };
+        add('csrf_token', CSRF);
         add('selected_type', selectedType === 'optimized' ? 'OPT' : 'CUS');
         add('time_start', rangeStart.value);
         add('time_end', rangeEnd.value);

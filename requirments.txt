@@ -5,3 +5,4 @@ Bcrypt
 UserMixin
 seaborn
 matplotlib
+Flask-WTF

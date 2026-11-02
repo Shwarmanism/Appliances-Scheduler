@@ -12,7 +12,7 @@
 
 <div class="grid opt-top">
     <section class="panel">
-        <form id="optForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST" novalidate>
+        <form id="optForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST" novalidate><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="save_not" value="">
             <div class="row">
                 <div class="field">
@@ -46,7 +46,7 @@
             {% endif %}
         </div>
         {% if appliances %}
-        <form id="saveForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST">
+        <form id="saveForm" action="{{ url_for('optimizer.optimize_appliances') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="energy-cap" value="{{ energy_cap }}">
             <input type="hidden" name="save_not" value="save">
             <button id="saveBtn" type="submit" class="btn btn--success">{{ icon('save', 18) }} Save combination</button>

@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Welcome back</h1>
 <p class="lede">Log in to see today's usage and costs.</p>
-<form id="login-form" method="POST" action="{{ url_for('access.login') }}">
+<form id="login-form" method="POST" action="{{ url_for('access.login') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="field">
         <label class="label" for="login-email">Email</label>
         <input class="input" type="email" id="login-email" name="email" autocomplete="email" required autofocus>

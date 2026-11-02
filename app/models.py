@@ -1,6 +1,9 @@
 from app import db
 from flask_login import UserMixin
 from datetime import datetime
+import hashlib
+import hmac
+from flask import current_app
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -11,8 +14,14 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(254), nullable=False)
 
+    def session_fingerprint(self):
+        # Keyed digest of the stored password hash: changes whenever the password does,
+        # and never exposes the hash itself in the session cookie.
+        key = current_app.config['SECRET_KEY'].encode()
+        return hmac.new(key, self.password.encode(), hashlib.sha256).hexdigest()[:32]
+
     def get_id(self):
-        return str(self.user_id)
+        return f"{self.user_id}:{self.session_fingerprint()}"
     
     appliances = db.relationship(
         'Appliances',

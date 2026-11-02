@@ -16,7 +16,7 @@
             <h2 class="panel-title">Profile</h2>
             <p class="panel-sub">Your name appears in the sidebar and dashboard greeting.</p>
         </div>
-        <form class="panel" method="POST" action="{{ url_for('access.settings') }}">
+        <form class="panel" method="POST" action="{{ url_for('access.settings') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="action" value="profile">
             <div class="row">
                 <div class="field">
@@ -33,6 +33,11 @@
                 <input class="input" type="text" id="username" value="{{ current_user.username }}" readonly>
                 <span class="hint">Usernames can't be changed.</span>
             </div>
+            <div class="field" id="emailPwField" hidden>
+                <label class="label" for="current-password-profile">Current password</label>
+                <input class="input" type="password" id="current-password-profile" name="current_password" autocomplete="current-password">
+                <span class="hint">Needed to confirm it's you before changing your email.</span>
+            </div>
             <div class="set-actions">
                 <button type="submit" class="btn btn--primary">Save changes</button>
             </div>
@@ -47,7 +52,7 @@
         <div class="panel set-inline">
             <div>
                 <div class="set-k">{{ icon('key', 18) }} Password</div>
-                <div class="muted" style="font-size:var(--fs-sm)">Changing it keeps you logged in on this device.</div>
+                <div class="muted" style="font-size:var(--fs-sm)">Changing it logs out every other device.</div>
             </div>
             <button type="button" class="btn btn--secondary" id="openChangePasswordModal">Change password</button>
         </div>
@@ -60,7 +65,7 @@
         </div>
         <div class="panel set-inline">
             <div class="set-k">{{ icon('logout', 18) }} Log out of Volt Vortex</div>
-            <form action="{{ url_for('access.logout') }}" method="post">
+            <form action="{{ url_for('access.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn--danger-soft">Log out</button>
             </form>
         </div>
@@ -75,7 +80,7 @@
             <h2 class="modal-title" id="pwTitle">Change password</h2>
             <button type="button" class="icon-btn modal-x" data-close aria-label="Close">{{ icon('x') }}</button>
         </div>
-        <form method="POST" action="{{ url_for('access.settings') }}" id="pwForm">
+        <form method="POST" action="{{ url_for('access.settings') }}" id="pwForm"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="action" value="password">
             <div class="field">
                 <label class="label" for="old-password">Current password</label>
@@ -101,6 +106,13 @@
 
 {% block scripts %}
 <script>
+    const emailIn = document.getElementById('email'), emailPw = document.getElementById('emailPwField');
+    const origEmail = emailIn.value.trim().toLowerCase();
+    emailIn.addEventListener('input', () => {
+        const changed = emailIn.value.trim().toLowerCase() !== origEmail;
+        emailPw.hidden = !changed;
+        document.getElementById('current-password-profile').required = changed;
+    });
     document.getElementById('openChangePasswordModal').onclick = () => openModal('changePasswordModal');
     const np = document.getElementById('new-password'), cp = document.getElementById('confirm-password'), mm = document.getElementById('pwMismatch');
     function checkMatch() { mm.hidden = !cp.value || np.value === cp.value; }
