@@ -7,6 +7,35 @@ You add the appliances you own from a built-in catalog, say how long you use the
 - **optimize**: pick which appliances to keep running under a daily energy cap
 - **schedule**: find the cheapest hours to run each appliance inside the time window you're free
 
+## Demo
+
+![Volt Vortex walkthrough: login, dashboard, appliances, optimization, scheduling and analytics](docs/demo.gif)
+
+*Walkthrough: log in → dashboard → edit an appliance → optimize under a 30 kWh cap → generate a schedule → analytics.*
+
+## Screenshots
+
+| Dashboard | Smart scheduling |
+|---|---|
+| ![Dashboard with monthly stats, today's schedule timeline and biggest energy users](docs/screenshots/dashboard.png) | ![Smart scheduling with appliance picker, time window and generated schedule](docs/screenshots/scheduling.png) |
+| **Appliances** | **Edit an appliance** |
+| ![Appliance list with on/off switches, load levels and daily cost](docs/screenshots/appliances.png) | ![Edit appliance dialog with usage controls and live cost preview](docs/screenshots/appliance-edit.png) |
+| **Optimization** | **Analytics** |
+| ![Optimized plan under a daily energy cap with estimated savings](docs/screenshots/optimization.png) | ![Analytics charts for usage by appliance, usage over time and savings](docs/screenshots/analytics.png) |
+| **Login** | **Settings** |
+| ![Login page with photo slideshow and electricity rates](docs/screenshots/login.png) | ![Settings page for profile, password and session](docs/screenshots/settings.png) |
+
+<details>
+<summary><strong>Mobile</strong></summary>
+
+<p>
+<img src="docs/screenshots/mobile-dashboard.png" width="300" alt="Dashboard on a phone">
+&nbsp;&nbsp;
+<img src="docs/screenshots/mobile-scheduling.png" width="300" alt="Smart scheduling on a phone">
+</p>
+
+</details>
+
 ## Features
 
 | Page | What it does |
@@ -38,7 +67,7 @@ All rates live in one place, [`app/rates.py`](app/rates.py). Every page reads fr
 
 - **Backend:** Python 3.11, Flask 3, Flask-SQLAlchemy, Flask-Login, Flask-Bcrypt, Flask-WTF (CSRF protection)
 - **Database:** SQLite by default; MySQL through PyMySQL
-- **Frontend:** Jinja2 templates with plain CSS (`app/static/theme.css` holds the design tokens and shared components). Chart.js is used on Analytics. Fonts are Plus Jakarta Sans and Syne (Google Fonts).
+- **Frontend:** Jinja2 templates with plain CSS (`app/static/theme.css` holds the design tokens and shared components). Chart.js is used on Analytics. Fonts are Manrope for the interface and Syne for the VOLT VORTEX wordmark (Google Fonts).
 
 ## Getting started
 
@@ -97,6 +126,7 @@ Appliances-Scheduler/
 ├── run.py                     # entry point: creates tables, starts the dev server on :5001
 ├── database/config.py         # reads MYSQL_PATH and SECRET_KEY from .env
 ├── instance/app.db            # SQLite database (created on first run)
+├── docs/                      # demo.gif and screenshots/ used in this README
 └── app/
     ├── __init__.py            # app factory, login manager, CSRF, blueprints
     ├── models.py              # User, Appliances, OptimizedAppliances, ScheduledApplianceUsage
